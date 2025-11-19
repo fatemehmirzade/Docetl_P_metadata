@@ -1,0 +1,168 @@
+default_model: gpt-4o
+max_threads: 4
+
+optimizer_config:
+  enable_optimizer: true
+  sample_size: 5  
+  validation_sample_size: 3  
+  optimizer_model: gpt-4o
+
+datasets:
+  papers:
+    type: file
+    path: ./papers_dataset.json
+
+operations:
+  - name: extract_biological_info
+    type: map
+    model: gpt-4o
+    output:
+      schema:
+        Organism: list[string]
+        Strain: list[string]
+        Age: list[string]
+        Sex: list[string]
+        OrganismPart: list[string]
+        MaterialType: list[string]
+        Specimen: list[string]
+        AncestryCategory: list[string]
+        DevelopmentalStage: list[string]
+        Genotype: list[string]
+        GeneticModification: list[string]
+        NumberOfBiologicalReplicates: list[string]
+    prompt: |
+      Extract biological information from this proteomics paper.
+      
+      Paper: {{ input.filename }}
+      {% if input.methods %}Methods: {{ input.methods }}{% endif %}
+      {% if input.supplementary_information %}Supplementary: {{ input.supplementary_information }}{% endif %}
+      
+      Extract ALL mentions of:
+      - Organism: scientific AND common names (e.g., "Mus musculus", "mouse", "mice")
+      - Strain: organism strain/line (e.g., "C57BL/6", "HeLa", "Swiss-Webster")
+      - Age: age descriptions (e.g., "8-12 weeks", "adult", "P7")
+      - Sex: biological sex (e.g., "male", "female", "both sexes")
+      - OrganismPart: tissues/organs (e.g., "brain", "liver", "hippocampus")
+      - MaterialType: sample type (e.g., "tissue", "plasma", "cells", "CSF")
+      - Specimen: specimen type (e.g., "biopsy", "fresh frozen", "FFPE")
+      - AncestryCategory: ancestry/ethnicity (e.g., "European", "Asian")
+      - DevelopmentalStage: developmental stage (e.g., "embryonic", "adult")
+      - Genotype: genetic background (e.g., "wild-type", "knockout")
+      - GeneticModification: modifications (e.g., "CRISPR knockout", "transgenic")
+      - NumberOfBiologicalReplicates: sample size (e.g., "n=5", "three animals per group")
+      
+      Return JSON only, no markdown. Empty list if field not found.
+    
+    gleaning:
+      num_rounds: 1
+      validation_prompt: |
+        Check if extraction missed: (1) organism names, (2) tissues/organs, (3) sample sizes, (4) strain/age details.
+        Return: {"passes_validation": true/false, "critical_omissions": [...], "next_round_instructions": "..."}
+    
+    validate:
+      - 'len(output["Organism"]) > 0'
+
+  - name: unnest_organism
+    type: unnest
+    unnest_key: Organism
+    keep_empty: true
+
+  - name: resolve_organism
+    type: resolve
+    blocking_keys:
+      - Organism
+    blocking_threshold: 0.80
+    comparison_model: gpt-4o-mini
+    comparison_prompt: |
+      Are these the same organism?
+      Organism 1: "{{ input1.Organism }}"
+      Organism 2: "{{ input2.Organism }}"
+      
+      Equivalences: "mouse"="mice"="Mus musculus", "human"="Homo sapiens", "HeLa"="human"
+      Return "True" if same, "False" if different.
+    
+    embedding_model: text-embedding-3-small
+    resolution_model: gpt-4o-mini
+    resolution_prompt: |
+      Standardize these organism names (prefer scientific name):
+      {% for entry in inputs %}{{ entry.Organism }}{% if not loop.last %}, {% endif %}{% endfor %}
+      
+      Examples: ["mouse","mice","Mus musculus"]→"Mus musculus", ["human","HeLa"]→"Homo sapiens"
+      Return ONLY the canonical name.
+    
+    output:
+      schema:
+        canonical_organism: string
+
+  - name: unnest_organism_part
+    type: unnest
+    unnest_key: OrganismPart
+    keep_empty: true
+
+  - name: resolve_organism_part
+    type: resolve
+    blocking_keys:
+      - OrganismPart
+    blocking_threshold: 0.80
+    comparison_model: gpt-4o-mini
+    comparison_prompt: |
+      Are these the same organism part?
+      Part 1: "{{ input1.OrganismPart }}"
+      Part 2: "{{ input2.OrganismPart }}"
+      
+      Equivalences: "brain"="brains", "CSF"="cerebrospinal fluid", "RBCs"="red blood cells"
+      Return "True" if same, "False" if different.
+    
+    embedding_model: text-embedding-3-small
+    resolution_model: gpt-4o-mini
+    resolution_prompt: |
+      Standardize these organism parts (prefer full form):
+      {% for entry in inputs %}{{ entry.OrganismPart }}{% if not loop.last %}, {% endif %}{% endfor %}
+      Return ONLY the canonical name.
+    
+    output:
+      schema:
+        canonical_organism_part: string
+
+  - name: aggregate_biological_info
+    type: reduce
+    reduce_key:
+      - filename
+    output:
+      schema:
+        unique_organisms: list[string]
+        unique_organism_parts: list[string]
+        strains: list[string]
+        ages: list[string]
+        sexes: list[string]
+        material_types: list[string]
+        biological_replicates: list[string]
+    prompt: |
+      Aggregate and deduplicate biological information for: {{ reduce_key.filename }}
+      
+      Organisms: {% for doc in inputs %}{% if doc.canonical_organism %}{{ doc.canonical_organism }}, {% endif %}{% endfor %}
+      Organism parts: {% for doc in inputs %}{% if doc.canonical_organism_part %}{{ doc.canonical_organism_part }}, {% endif %}{% endfor %}
+      Strains: {% for doc in inputs %}{% for s in doc.Strain %}{{ s }}, {% endfor %}{% endfor %}
+      Ages: {% for doc in inputs %}{% for a in doc.Age %}{{ a }}, {% endfor %}{% endfor %}
+      Sex: {% for doc in inputs %}{% for s in doc.Sex %}{{ s }}, {% endfor %}{% endfor %}
+      Materials: {% for doc in inputs %}{% for m in doc.MaterialType %}{{ m }}, {% endfor %}{% endfor %}
+      Replicates: {% for doc in inputs %}{% for r in doc.NumberOfBiologicalReplicates %}{{ r }}, {% endfor %}{% endfor %}
+      
+      Return deduplicated JSON with unique values for: unique_organisms, unique_organism_parts, strains, ages, sexes, material_types, biological_replicates.
+
+pipeline:
+  steps:
+    - name: biological_pipeline
+      input: papers
+      operations:
+        - extract_biological_info
+        - unnest_organism
+        - resolve_organism
+        - unnest_organism_part
+        - resolve_organism_part
+        - aggregate_biological_info
+
+  output:
+    type: file
+    path: ./output/biological_info_complete.json
+    intermediate_dir: ./checkpoints
