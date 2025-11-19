@@ -1,0 +1,202 @@
+datasets:
+  papers:
+    path: ./papers_dataset.json
+    type: file
+default_model: gpt-4o
+max_threads: 4
+operations:
+- model: gpt-4o
+  name: aggregate_ms_info
+  output:
+    schema:
+      unique_acquisition_methods: list[string]
+      unique_fragmentation_methods: list[string]
+      unique_instruments: list[string]
+      unique_ionization_types: list[string]
+      unique_ms2_analyzers: list[string]
+      unique_technology_types: list[string]
+  prompt: 'Aggregate and deduplicate MS instrumentation for: {{ reduce_key.filename
+    }}
+
+
+    {% for doc in inputs %}
+
+    Instruments: {% if doc.canonical_instrument %}{{ doc.canonical_instrument }}{%
+    elif doc.Instrument %}{{ doc.Instrument }}{% endif %}
+
+    Fragmentation: {% if doc.canonical_fragmentation %}{{ doc.canonical_fragmentation
+    }}{% elif doc.FragmentationMethod %}{{ doc.FragmentationMethod }}{% endif %}
+
+    Acquisition: {% for a in doc.AcquisitionMethod %}{{ a }}, {% endfor %}
+
+    Ionization: {% for i in doc.IonizationType %}{{ i }}, {% endfor %}
+
+    MS2 Analyzer: {% for m in doc.MS2MassAnalyzer %}{{ m }}, {% endfor %}
+
+    Technology: {% for t in doc.TechnologyType %}{{ t }}, {% endfor %}
+
+    {% endfor %}
+
+
+    Return deduplicated JSON. Remove empty strings, nulls, and generic locations (e.g.,
+    "Sunnyvale", "CA"). Keep only actual MS instrument names, methods, and technologies.
+
+    '
+  reduce_key:
+  - filename
+  type: reduce
+- blocking_keys:
+  - FragmentationMethod
+  blocking_threshold: 0.85
+  comparison_model: gpt-4o-mini
+  comparison_prompt: 'Are these the same fragmentation method?
+
+    Method 1: "{{ input1.FragmentationMethod }}"
+
+    Method 2: "{{ input2.FragmentationMethod }}"
+
+
+    Equivalences: "HCD"="higher-energy collisional dissociation", "CID"="collision-induced
+    dissociation", "ETD"="electron-transfer dissociation"
+
+    Return "True" if same, "False" if different.
+
+    '
+  embedding_model: text-embedding-3-small
+  model: gpt-4o
+  name: resolve_fragmentation
+  output:
+    schema:
+      canonical_fragmentation: string
+  resolution_model: gpt-4o-mini
+  resolution_prompt: 'Standardize these fragmentation methods (prefer full form):
+
+    {% for entry in inputs %}{{ entry.FragmentationMethod }}{% if not loop.last %},
+    {% endif %}{% endfor %}
+
+    Return ONLY the canonical name.
+
+    '
+  type: resolve
+- keep_empty: true
+  model: gpt-4o
+  name: unnest_fragmentation
+  type: unnest
+  unnest_key: FragmentationMethod
+- blocking_keys:
+  - Instrument
+  blocking_threshold: 0.75
+  comparison_model: gpt-4o-mini
+  comparison_prompt: "Are these the same instrument?\nInstrument 1: \"{{ input1.Instrument\
+    \ }}\"\nInstrument 2: \"{{ input2.Instrument }}\"\n\nEquivalences: \"Orbitrap\"\
+    =\"Orbitrap Fusion\", \"LTQ-Orbitrap\"=\"LTQ Orbitrap\", \"Thermo Scientific\"\
+    =\"Thermo Fisher\"\nDifferent: \"Orbitrap\"\xE2\u2030\_\"Q-TOF\", \"Bruker\"\xE2\
+    \u2030\_\"Waters\"\nReturn \"True\" if same, \"False\" if different.\n"
+  embedding_model: text-embedding-3-small
+  model: gpt-4o
+  name: resolve_instrument
+  output:
+    schema:
+      canonical_instrument: string
+  resolution_model: gpt-4o-mini
+  resolution_prompt: 'Standardize these instruments (prefer specific model):
+
+    {% for entry in inputs %}{{ entry.Instrument }}{% if not loop.last %}, {% endif
+    %}{% endfor %}
+
+    Return ONLY the canonical name.
+
+    '
+  type: resolve
+- keep_empty: false
+  model: gpt-4o
+  name: unnest_instrument
+  type: unnest
+  unnest_key: Instrument
+- gleaning:
+    num_rounds: 1
+    validation_prompt: 'Check if extraction missed: (1) instrument names, (2) acquisition
+      methods, (3) instrument variations (full+abbreviation), (4) ionization type.
+
+      Return: {"passes_validation": true/false, "critical_omissions": [...], "next_round_instructions":
+      "..."}
+
+      '
+  model: gpt-4o
+  name: extract_ms_instruments
+  output:
+    schema:
+      AcquisitionMethod: list[string]
+      CollisionEnergy: list[string]
+      FragmentMassTolerance: list[string]
+      FragmentationMethod: list[string]
+      Instrument: list[string]
+      IonizationType: list[string]
+      MS2MassAnalyzer: list[string]
+      PrecursorMassTolerance: list[string]
+      TechnologyType: list[string]
+  prompt: 'Extract mass spectrometry instrumentation information from this proteomics
+    paper.
+
+
+    Paper: {{ input.filename }}
+
+    {% if input.methods %}Methods: {{ input.methods }}{% endif %}
+
+    {% if input.supplementary_information %}Supplementary: {{ input.supplementary_information
+    }}{% endif %}
+
+
+    Extract ALL variations of:
+
+    - Instrument: full names AND abbreviations (e.g., "hybrid linear ion trap Orbitrap",
+    "LTQ-Orbitrap Velos", "Thermo Scientific")
+
+    - AcquisitionMethod: acquisition modes (e.g., "LC-MS/MS", "DDA", "data-dependent",
+    "SWATH", "PRM")
+
+    - IonizationType: ionization source (e.g., "ESI", "electrospray ionization", "MALDI",
+    "nano-ESI")
+
+    - FragmentationMethod: fragmentation techniques (e.g., "HCD", "higher-energy collisional
+    dissociation", "CID", "ETD")
+
+    - MS2MassAnalyzer: MS2 analyzer type (e.g., "Orbitrap", "ion trap", "TOF", "Q-TOF")
+
+    - CollisionEnergy: collision energy (e.g., "28%", "NCE", "25-35%", "30 eV")
+
+    - PrecursorMassTolerance: MS1 tolerance (e.g., "10 ppm", "20 ppm", "0.5 Da")
+
+    - FragmentMassTolerance: MS2 tolerance (e.g., "0.02 Da", "0.6 Da", "20 ppm")
+
+    - TechnologyType: MS technology (e.g., "LC-MS/MS", "shotgun proteomics", "targeted
+    proteomics")
+
+
+    Return JSON only, no markdown. Empty list if field not found.
+
+    '
+  type: map
+  validate:
+  - len(output["Instrument"]) > 0
+  - len(output["AcquisitionMethod"]) > 0
+optimizer_config:
+  enable_optimizer: true
+  optimizer_model: gpt-4o
+  sample_size: 5
+  validation_sample_size: 3
+pipeline:
+  output:
+    intermediate_dir: ./checkpoints
+    path: ./output/ms_instruments_complete.json
+    type: file
+  steps:
+  - input: papers
+    name: ms_pipeline
+    operations:
+    - extract_ms_instruments
+    - unnest_instrument
+    - resolve_instrument
+    - unnest_fragmentation
+    - resolve_fragmentation
+    - aggregate_ms_info

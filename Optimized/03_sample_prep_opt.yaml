@@ -1,0 +1,209 @@
+datasets:
+  papers:
+    path: ./papers_dataset.json
+    type: file
+default_model: gpt-4o
+max_threads: 4
+operations:
+- model: gpt-4o
+  name: aggregate_sample_prep
+  output:
+    schema:
+      unique_alkylation_reagents: list[string]
+      unique_cleavage_agents: list[string]
+      unique_compounds: list[string]
+      unique_depletions: list[string]
+      unique_labels: list[string]
+      unique_modifications: list[string]
+      unique_reduction_reagents: list[string]
+  prompt: 'Aggregate and deduplicate sample preparation for: {{ reduce_key.filename
+    }}
+
+
+    Cleavage: {% for doc in inputs %}{% if doc.canonical_cleavage %}{{ doc.canonical_cleavage
+    }}, {% endif %}{% endfor %}
+
+    Alkylation: {% for doc in inputs %}{% if doc.canonical_alkylation %}{{ doc.canonical_alkylation
+    }}, {% endif %}{% endfor %}
+
+    Labels: {% for doc in inputs %}{% if doc.canonical_label %}{{ doc.canonical_label
+    }}, {% endif %}{% endfor %}
+
+    Reduction: {% for doc in inputs %}{% for r in doc.ReductionReagent %}{{ r }},
+    {% endfor %}{% endfor %}
+
+    Modifications: {% for doc in inputs %}{% for m in doc.Modification %}{{ m }},
+    {% endfor %}{% endfor %}
+
+
+    Return deduplicated JSON with unique canonical values only.
+
+    '
+  reduce_key:
+  - filename
+  type: reduce
+- blocking_keys:
+  - Label
+  blocking_threshold: 0.85
+  comparison_model: gpt-4o-mini
+  comparison_prompt: "Are these the same labeling method?\nLabel 1: \"{{ input1.Label\
+    \ }}\"\nLabel 2: \"{{ input2.Label }}\"\n\nEquivalences: \"TMT\"=\"tandem mass\
+    \ tag\", \"iTRAQ\"=\"isobaric tag\", \"SILAC\"=\"stable isotope labeling\", \"\
+    label-free\"=\"LFQ\"\nDifferent: \"TMT10plex\"\xE2\u2030\_\"TMT11plex\", \"iTRAQ\
+    \ 4-plex\"\xE2\u2030\_\"iTRAQ 8-plex\"\nGeneric \"TMT\" matches specific plexes.\
+    \ Return \"True\" if same, \"False\" if different.\n"
+  embedding_model: text-embedding-3-small
+  model: gpt-4o
+  name: resolve_label
+  output:
+    schema:
+      canonical_label: string
+  resolution_model: gpt-4o-mini
+  resolution_prompt: "Standardize these labels (prefer specific plex notation):\n\
+    {% for entry in inputs %}{{ entry.Label }}{% if not loop.last %}, {% endif %}{%\
+    \ endfor %}\n\nExamples: [\"TMT\",\"TMT10plex\"]\xE2\u2020\u2019\"TMT10plex\"\
+    , [\"iTRAQ\",\"iTRAQ 4-plex\"]\xE2\u2020\u2019\"iTRAQ 4-plex\", [\"label-free\"\
+    ,\"LFQ\"]\xE2\u2020\u2019\"label-free\"\nReturn ONLY the canonical name.\n"
+  type: resolve
+- keep_empty: true
+  model: gpt-4o
+  name: unnest_label
+  type: unnest
+  unnest_key: Label
+- blocking_keys:
+  - AlkylationReagent
+  blocking_threshold: 0.85
+  comparison_model: gpt-4o-mini
+  comparison_prompt: 'Are these the same alkylation reagent?
+
+    Reagent 1: "{{ input1.AlkylationReagent }}"
+
+    Reagent 2: "{{ input2.AlkylationReagent }}"
+
+
+    Equivalences: "iodoacetamide"="IAA", "chloroacetamide"="CAA"="2-chloroacetamide"
+
+    Return "True" if same compound, "False" if different.
+
+    '
+  embedding_model: text-embedding-3-small
+  model: gpt-4o
+  name: resolve_alkylation
+  output:
+    schema:
+      canonical_alkylation: string
+  resolution_model: gpt-4o-mini
+  resolution_prompt: "Standardize these alkylation reagents (prefer full name with\
+    \ abbreviation):\n{% for entry in inputs %}{{ entry.AlkylationReagent }}{% if\
+    \ not loop.last %}, {% endif %}{% endfor %}\n\nExamples: [\"iodoacetamide\",\"\
+    IAA\"]\xE2\u2020\u2019\"iodoacetamide (IAA)\", [\"chloroacetamide\",\"CAA\"]\xE2\
+    \u2020\u2019\"chloroacetamide (CAA)\"\nReturn ONLY the canonical name.\n"
+  type: resolve
+- keep_empty: true
+  model: gpt-4o
+  name: unnest_alkylation
+  type: unnest
+  unnest_key: AlkylationReagent
+- blocking_keys:
+  - CleavageAgent
+  blocking_threshold: 0.85
+  comparison_model: gpt-4o-mini
+  comparison_prompt: 'Are these the same enzyme?
+
+    Agent 1: "{{ input1.CleavageAgent }}"
+
+    Agent 2: "{{ input2.CleavageAgent }}"
+
+
+    Equivalences: "trypsin"="trypsin digestion", "Lys-C"="LysC"="endoproteinase Lys-C",
+    "Glu-C"="V8 protease"
+
+    Return "True" if same enzyme, "False" if different.
+
+    '
+  embedding_model: text-embedding-3-small
+  model: gpt-4o
+  name: resolve_cleavage
+  output:
+    schema:
+      canonical_cleavage: string
+  resolution_model: gpt-4o-mini
+  resolution_prompt: "Standardize these cleavage agents (prefer enzyme name only):\n\
+    {% for entry in inputs %}{{ entry.CleavageAgent }}{% if not loop.last %}, {% endif\
+    \ %}{% endfor %}\n\nExamples: [\"trypsin\",\"trypsin digestion\"]\xE2\u2020\u2019\
+    \"trypsin\", [\"Lys-C\",\"LysC\"]\xE2\u2020\u2019\"Lys-C\"\nReturn ONLY the canonical\
+    \ name.\n"
+  type: resolve
+- keep_empty: true
+  model: gpt-4o
+  name: unnest_cleavage
+  type: unnest
+  unnest_key: CleavageAgent
+- gleaning:
+    num_rounds: 2
+    validation_prompt: 'Check if extraction missed: (1) cleavage enzyme (CRITICAL
+      - 95% of papers), (2) reduction/alkylation reagents (80%+ of papers), (3) labeling
+      method, (4) both full names and abbreviations.
+
+      Common mistakes: enzyme mentioned but not extracted, only abbreviation without
+      full name.
+
+      Return: {"passes_validation": true/false, "critical_omissions": [...], "suggestions":
+      [...]}
+
+      '
+  model: gpt-4o
+  name: extract_sample_prep
+  output:
+    schema:
+      AlkylationReagent: list[string]
+      CleavageAgent: list[string]
+      Compound: list[string]
+      ConcentrationOfCompound: list[string]
+      Depletion: list[string]
+      Label: list[string]
+      Modification: list[string]
+      ReductionReagent: list[string]
+      SpikedCompound: list[string]
+      SyntheticPeptide: list[string]
+  prompt: "Extract sample preparation information from this proteomics paper.\n\n\
+    Paper: {{ input.filename }}\n{% if input.methods %}Methods: {{ input.methods }}{%\
+    \ endif %}\n{% if input.supplementary_information %}Supplementary: {{ input.supplementary_information\
+    \ }}{% endif %}\n\nExtract ALL variations of:\n- CleavageAgent: digestion enzymes\
+    \ (e.g., \"trypsin\", \"digested with trypsin\", \"Lys-C\", \"chymotrypsin\")\n\
+    - AlkylationReagent: alkylation agents (e.g., \"iodoacetamide\", \"IAA\", \"chloroacetamide\"\
+    , \"CAA\")\n- ReductionReagent: reduction agents (e.g., \"DTT\", \"dithiothreitol\"\
+    , \"TCEP\", \"beta-mercaptoethanol\")\n- Depletion: depletion methods (e.g., \"\
+    albumin depletion\", \"IgG depletion\", \"ProteoMiner\")\n- Label: labeling methods\
+    \ (e.g., \"TMT\", \"TMT10plex\", \"iTRAQ\", \"SILAC\", \"label-free\")\n- ConcentrationOfCompound:\
+    \ concentrations with units (e.g., \"10 mg\", \"2 mM\", \"50 \xC2\xB5g\")\n- Compound:\
+    \ molecular compounds (e.g., \"protein\", \"peptide\", \"phosphopeptide\", \"\
+    albumin\")\n- Modification: PTMs (e.g., \"phosphorylation\", \"ubiquitination\"\
+    , \"acetylation\", \"carbamidomethylation\")\n- SpikedCompound: spiked standards\
+    \ (e.g., \"BSA\", \"yeast enolase\", \"UPS1\", \"UPS2\")\n- SyntheticPeptide:\
+    \ synthetic standards (e.g., \"heavy labeled peptides\", \"isotope-labeled standards\"\
+    )\n\nExtract BOTH full names AND abbreviations (e.g., \"DTT\" AND \"dithiothreitol\"\
+    ).\nReturn JSON only, no markdown. Empty list if field not found.\n"
+  type: map
+optimizer_config:
+  enable_optimizer: true
+  optimizer_model: gpt-4o
+  sample_size: 5
+  validation_sample_size: 3
+pipeline:
+  output:
+    intermediate_dir: ./checkpoints
+    path: ./output/sample_prep_complete.json
+    type: file
+  steps:
+  - input: papers
+    name: sample_prep_pipeline
+    operations:
+    - extract_sample_prep
+    - unnest_cleavage
+    - resolve_cleavage
+    - unnest_alkylation
+    - resolve_alkylation
+    - unnest_label
+    - resolve_label
+    - aggregate_sample_prep

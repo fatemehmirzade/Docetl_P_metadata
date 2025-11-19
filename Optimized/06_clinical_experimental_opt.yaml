@@ -1,0 +1,296 @@
+datasets:
+  papers:
+    path: ./papers_dataset.json
+    type: file
+default_model: gpt-4o
+max_threads: 4
+operations:
+- model: gpt-4o
+  name: aggregate_clinical_data
+  output:
+    schema:
+      bmi_values: list[string]
+      growth_rates: list[string]
+      sample_treatments: list[string]
+      sampling_times: list[string]
+      staining_methods: list[string]
+      tumor_cellularity: list[string]
+      tumor_grades: list[string]
+      tumor_sites: list[string]
+      tumor_sizes: list[string]
+      tumor_stages: list[string]
+      unique_cell_lines: list[string]
+      unique_cell_parts: list[string]
+      unique_cell_types: list[string]
+      unique_disease_treatments: list[string]
+      unique_diseases: list[string]
+      unique_treatments: list[string]
+  prompt: "Aggregate and deduplicate clinical/experimental data for: {{ reduce_key.filename\
+    \ }}\n\n{% for doc in inputs %}\nDiseases: {% if doc.canonical_disease %}{{ doc.canonical_disease\
+    \ }}{% elif doc.Disease %}{% for d in doc.Disease %}{{ d }}, {% endfor %}{% endif\
+    \ %}\nCell lines: {% if doc.canonical_cell_line %}{{ doc.canonical_cell_line }}{%\
+    \ elif doc.CellLine %}{% for cl in doc.CellLine %}{{ cl }}, {% endfor %}{% endif\
+    \ %}\nCell types: {% if doc.canonical_cell_type %}{{ doc.canonical_cell_type }}{%\
+    \ elif doc.CellType %}{% for ct in doc.CellType %}{{ ct }}, {% endfor %}{% endif\
+    \ %}\nTreatments: {% if doc.canonical_treatment %}{{ doc.canonical_treatment }}{%\
+    \ elif doc.Treatment %}{% for t in doc.Treatment %}{{ t }}, {% endfor %}{% endif\
+    \ %}\nDisease treatments: {% for dt in doc.DiseaseTreatment %}{{ dt }}, {% endfor\
+    \ %}\nCell parts: {% for cp in doc.CellPart %}{{ cp }}, {% endfor %}\nTumor stages:\
+    \ {% for s in doc.TumorStage %}{{ s }}, {% endfor %}\nTumor grades: {% for g in\
+    \ doc.TumorGrade %}{{ g }}, {% endfor %}\nTumor cellularity: {% for c in doc.TumorCellularity\
+    \ %}{{ c }}, {% endfor %}\nTumor sizes: {% for ts in doc.TumorSize %}{{ ts }},\
+    \ {% endfor %}\nTumor sites: {% for site in doc.TumorSite %}{{ site }}, {% endfor\
+    \ %}\nSample treatments: {% for st in doc.SampleTreatment %}{{ st }}, {% endfor\
+    \ %}\nStaining: {% for sm in doc.Staining %}{{ sm }}, {% endfor %}\nGrowth rates:\
+    \ {% for gr in doc.GrowthRate %}{{ gr }}, {% endfor %}\nSampling times: {% for\
+    \ stime in doc.SamplingTime %}{{ stime }}, {% endfor %}\nBMI: {% for bmi in doc.BMI\
+    \ %}{{ bmi }}, {% endfor %}\n{% endfor %}\n\nIMPORTANT RULES:\n1. REMOVE from\
+    \ treatments any:\n   - Administration routes: \"retro-orbital injection\", \"\
+    intraperitoneal injection\", \"i.v.\", \"i.p.\"\n   - Analytical methods: \"flow\
+    \ cytometry\", \"PCR\", \"genotyping\", \"western blot\", \"immunoblotting\",\
+    \ \"mass spectrometry\"\n   - Sample prep: \"immunoprecipitation\", \"lysis\"\
+    , \"centrifugation\", \"transfection\" (as method), \"washing\"\n   - Generic\
+    \ procedures without specific treatment: \"adoptive transfer\", \"immunization\"\
+    \ (unless specific)\n\n2. DEDUPLICATE using canonical values when available, otherwise\
+    \ deduplicate similar entries\n\n3. KEEP as treatments:\n   - Actual drug treatments:\
+    \ \"MG-132 treatment\", \"TSA treatment\", \"curcumin treatment\"\n   - Biological\
+    \ stimuli: \"heat shock\", \"LPS stimulation\", \"poly(I:C) treatment\"\n   -\
+    \ Therapeutic interventions: \"diphtheria toxin administration\", \"anti-CD40\
+    \ antibody treatment\", \"clodronate liposomes\"\n\nReturn deduplicated JSON with\
+    \ unique values for all fields, properly filtered.\n"
+  reduce_key:
+  - filename
+  type: reduce
+- blocking_keys:
+  - Treatment
+  blocking_threshold: 0.85
+  comparison_model: gpt-4o-mini
+  comparison_prompt: "Are these the same treatment?\nTreatment 1: \"{{ input1.Treatment\
+    \ }}\"\nTreatment 2: \"{{ input2.Treatment }}\"\n\nEquivalences: \"LPS\"=\"lipopolysaccharide\"\
+    =\"LPS stimulation\", \"heat shock\"=\"heat stress\", \"MG-132\"=\"MG132\"=\"\
+    proteasome inhibitor MG-132\", \"TSA\"=\"trichostatin A\"\nDifferent: LPS \xE2\
+    \u2030\_ poly(I:C), heat shock \xE2\u2030\_ cold shock, MG-132 \xE2\u2030\_ TSA\n\
+    Return \"True\" if same treatment, \"False\" if different.\n"
+  embedding_model: text-embedding-3-small
+  model: gpt-4o
+  name: resolve_treatment
+  output:
+    schema:
+      canonical_treatment: string
+  resolution_model: gpt-4o-mini
+  resolution_prompt: "Standardize these treatment names (prefer specific compound/stimulus\
+    \ with common abbreviation):\n{% for entry in inputs %}{{ entry.Treatment }}{%\
+    \ if not loop.last %}, {% endif %}{% endfor %}\n\nExamples: [\"LPS\",\"lipopolysaccharide\"\
+    ,\"LPS stimulation\"]\xE2\u2020\u2019\"lipopolysaccharide (LPS)\", [\"MG-132\"\
+    ,\"MG132\",\"proteasome inhibitor MG-132\"]\xE2\u2020\u2019\"MG-132\", [\"TSA\"\
+    ,\"trichostatin A\"]\xE2\u2020\u2019\"trichostatin A (TSA)\"\nReturn ONLY the\
+    \ canonical name.\n"
+  type: resolve
+- keep_empty: true
+  model: gpt-4o
+  name: unnest_treatment
+  type: unnest
+  unnest_key: Treatment
+- blocking_keys:
+  - CellType
+  blocking_threshold: 0.8
+  comparison_model: gpt-4o-mini
+  comparison_prompt: "Are these the same cell type?\nCell type 1: \"{{ input1.CellType\
+    \ }}\"\nCell type 2: \"{{ input2.CellType }}\"\n\nEquivalences: \"CD8+ T cells\"\
+    =\"CD8 T cells\"=\"cytotoxic T cells\"=\"CTLs\", \"CD4+ T cells\"=\"CD4 T cells\"\
+    =\"helper T cells\", \"regulatory T cells\"=\"Tregs\"=\"FOXP3+ T cells\", \"B\
+    \ cells\"=\"CD19+ B cells\"=\"CD20+ B cells\", \"dendritic cells\"=\"DCs\"=\"\
+    CD11c+ cells\", \"macrophages\"=\"CD11b+ macrophages\", \"neutrophils\"=\"CD33+\
+    \ cells\"\nDifferent: CD8+ T cells \xE2\u2030\_ CD4+ T cells, B cells \xE2\u2030\
+    \_ T cells, macrophages \xE2\u2030\_ dendritic cells\nReturn \"True\" if same\
+    \ cell type, \"False\" if different.\n"
+  embedding_model: text-embedding-3-small
+  model: gpt-4o
+  name: resolve_cell_type
+  output:
+    schema:
+      canonical_cell_type: string
+  resolution_model: gpt-4o-mini
+  resolution_prompt: "Standardize these cell type names (prefer full descriptive name\
+    \ with marker):\n{% for entry in inputs %}{{ entry.CellType }}{% if not loop.last\
+    \ %}, {% endif %}{% endfor %}\n\nExamples: [\"CD8+ T cells\",\"CD8 T cells\",\"\
+    cytotoxic T cells\"]\xE2\u2020\u2019\"CD8+ T cells\", [\"regulatory T cells\"\
+    ,\"Tregs\",\"FOXP3+ T cells\"]\xE2\u2020\u2019\"regulatory T cells (Tregs)\",\
+    \ [\"B cells\",\"CD19+ B cells\",\"CD20+ B cells\"]\xE2\u2020\u2019\"B cells\"\
+    , [\"dendritic cells\",\"DCs\"]\xE2\u2020\u2019\"dendritic cells\"\nReturn ONLY\
+    \ the canonical name.\n"
+  type: resolve
+- keep_empty: true
+  model: gpt-4o
+  name: unnest_cell_type
+  type: unnest
+  unnest_key: CellType
+- blocking_keys:
+  - CellLine
+  blocking_threshold: 0.85
+  comparison_model: gpt-4o-mini
+  comparison_prompt: "Are these the same cell line?\nCell line 1: \"{{ input1.CellLine\
+    \ }}\"\nCell line 2: \"{{ input2.CellLine }}\"\n\nEquivalences: \"HEK293\"=\"\
+    HEK-293\"=\"HEK 293\", \"MCF7\"=\"MCF-7\", \"A549\"=\"A-549\"\nDifferent: HeLa\
+    \ \xE2\u2030\_ HEK293, MCF-7 \xE2\u2030\_ MCF-10A\nReturn \"True\" if same cell\
+    \ line, \"False\" if different.\n"
+  embedding_model: text-embedding-3-small
+  model: gpt-4o
+  name: resolve_cell_line
+  output:
+    schema:
+      canonical_cell_line: string
+  resolution_model: gpt-4o-mini
+  resolution_prompt: "Standardize these cell line names (prefer standard format without\
+    \ spaces):\n{% for entry in inputs %}{{ entry.CellLine }}{% if not loop.last %},\
+    \ {% endif %}{% endfor %}\n\nExamples: [\"HEK293\",\"HEK-293\",\"HEK 293\"]\xE2\
+    \u2020\u2019\"HEK293\", [\"MCF7\",\"MCF-7\"]\xE2\u2020\u2019\"MCF-7\", [\"A549\"\
+    ,\"A-549\"]\xE2\u2020\u2019\"A549\"\nReturn ONLY the canonical name.\n"
+  type: resolve
+- keep_empty: true
+  model: gpt-4o
+  name: unnest_cell_line
+  type: unnest
+  unnest_key: CellLine
+- blocking_keys:
+  - Disease
+  blocking_threshold: 0.8
+  comparison_model: gpt-4o-mini
+  comparison_prompt: "Are these the same disease?\nDisease 1: \"{{ input1.Disease\
+    \ }}\"\nDisease 2: \"{{ input2.Disease }}\"\n\nEquivalences: \"Alzheimer's disease\"\
+    =\"AD\"=\"Alzheimer\", \"breast cancer\"=\"BC\", \"colorectal cancer\"=\"CRC\"\
+    , \"lung cancer\"=\"LC\"\nDifferent: breast cancer \xE2\u2030\_ lung cancer, Alzheimer's\
+    \ \xE2\u2030\_ Parkinson's\nReturn \"True\" if same disease, \"False\" if different.\n"
+  embedding_model: text-embedding-3-small
+  model: gpt-4o
+  name: resolve_disease
+  output:
+    schema:
+      canonical_disease: string
+  resolution_model: gpt-4o-mini
+  resolution_prompt: "Standardize these disease names (prefer full name with common\
+    \ abbreviation):\n{% for entry in inputs %}{{ entry.Disease }}{% if not loop.last\
+    \ %}, {% endif %}{% endfor %}\n\nExamples: [\"Alzheimer's disease\",\"AD\",\"\
+    Alzheimer\"]\xE2\u2020\u2019\"Alzheimer's disease (AD)\", [\"breast cancer\",\"\
+    BC\"]\xE2\u2020\u2019\"breast cancer\", [\"CRC\",\"colorectal cancer\"]\xE2\u2020\
+    \u2019\"colorectal cancer (CRC)\"\nReturn ONLY the canonical name.\n"
+  type: resolve
+- keep_empty: true
+  model: gpt-4o
+  name: unnest_disease
+  type: unnest
+  unnest_key: Disease
+- gleaning:
+    num_rounds: 2
+    validation_prompt: "Check if extraction missed:\nFor CLINICAL studies: \n  (1)\
+      \ disease with full name+abbreviation (e.g., \"colorectal cancer (CRC)\")\n\
+      \  (2) tumor stage/grade/cellularity\n  (3) IHC markers converted to cell types\
+      \ (CD8\xE2\u2020\u2019T cells, CD20\xE2\u2020\u2019B cells)\n\nFor LAB studies:\n\
+      \  (1) cell lines with standard format\n  (2) experimental treatments - MUST\
+      \ distinguish:\n      YES: actual treatments (drugs, stimuli) like \"MG-132\
+      \ treatment\", \"heat shock\", \"poly(I:C) treatment\"\n      NO: administration\
+      \ methods like \"retro-orbital injection\", \"intraperitoneal injection\"\n\
+      \      NO: analytical methods like \"flow cytometry\", \"PCR\", \"genotyping\"\
+      \n      NO: sample prep like \"immunoprecipitation\", \"lysis\"\n  (3) cell\
+      \ type markers MUST be converted:\n      CD4+ \xE2\u2020\u2019 CD4+ T cells\n\
+      \      CD8+ \xE2\u2020\u2019 CD8+ T cells\n      FOXP3+ \xE2\u2020\u2019 regulatory\
+      \ T cells (Tregs)\n      CD19+ or CD20+ \xE2\u2020\u2019 B cells\n      CD11c+\
+      \ \xE2\u2020\u2019 dendritic cells\n      CD11b+ \xE2\u2020\u2019 myeloid cells\n\
+      \nCommon mistakes: \n  - Markers not converted: \"CD8+\", \"FOXP3+\" appearing\
+      \ as-is\n  - Analytical methods in treatments: \"flow cytometry\", \"PCR\"\n\
+      \  - Injection routes in treatments: \"retro-orbital injection\"\n  - Sample\
+      \ prep in treatments: \"immunoprecipitation\"\n\nReturn: {\"passes_validation\"\
+      : true/false, \"critical_omissions\": [...], \"suggestions\": [...]}\n"
+  model: gpt-4o
+  name: extract_clinical_info
+  output:
+    schema:
+      AnatomicSiteTumor: list[string]
+      BMI: list[string]
+      CellLine: list[string]
+      CellPart: list[string]
+      CellType: list[string]
+      Disease: list[string]
+      DiseaseTreatment: list[string]
+      GrowthRate: list[string]
+      OriginSiteDisease: list[string]
+      SampleTreatment: list[string]
+      SamplingTime: list[string]
+      Staining: list[string]
+      Treatment: list[string]
+      TumorCellularity: list[string]
+      TumorGrade: list[string]
+      TumorSite: list[string]
+      TumorSize: list[string]
+      TumorStage: list[string]
+  prompt: "Extract clinical and experimental context from this proteomics paper.\n\
+    This could be CLINICAL (patient samples) or LAB (cell culture/animals). Adapt\
+    \ accordingly.\n\nPaper: {{ input.filename }}\n{% if input.methods %}Methods:\
+    \ {{ input.methods }}{% endif %}\n{% if input.supplementary_information %}Supplementary:\
+    \ {{ input.supplementary_information }}{% endif %}\n\nExtract ALL variations and\
+    \ IMMEDIATELY STANDARDIZE them:\n- Disease: disease names in standardized format\
+    \ \"Full Name (ABBR)\" (e.g., \"Alzheimer's disease (AD)\", \"breast cancer\"\
+    , \"lung squamous cell carcinoma (LSCC)\")\n- DiseaseTreatment: disease treatments\
+    \ (e.g., \"chemotherapy\", \"immunotherapy\", \"drug name\")\n- CellLine: cell\
+    \ line names in standard format (e.g., \"HeLa\", \"HEK293\", \"MCF-7\", \"A549\"\
+    )\n- CellType: cell types - ALWAYS CONVERT markers to cell type names (e.g., \"\
+    CD8+\"\xE2\u2020\u2019\"CD8+ T cells\", \"CD4+\"\xE2\u2020\u2019\"CD4+ T cells\"\
+    , \"FOXP3+\"\xE2\u2020\u2019\"regulatory T cells\", \"CD20+\"\xE2\u2020\u2019\"\
+    B cells\", \"CD19+\"\xE2\u2020\u2019\"B cells\", \"CD33+\"\xE2\u2020\u2019\"neutrophils\"\
+    , \"CD11c+\"\xE2\u2020\u2019\"dendritic cells\", \"CD11b+\"\xE2\u2020\u2019\"\
+    myeloid cells\")\n- CellPart: cellular components (e.g., \"nucleus\", \"cytoplasm\"\
+    , \"mitochondria\", \"membrane\")\n- Treatment: ONLY experimental interventions\
+    \ that ALTER biological state\n  INCLUDE: drug treatments (e.g., \"MG-132 treatment\"\
+    , \"TSA treatment\", \"curcumin treatment\"), biological stimuli (e.g., \"heat\
+    \ shock\", \"LPS stimulation\", \"starvation\"), therapeutic antibodies (e.g.,\
+    \ \"anti-CD40 antibody treatment\"), cell/tissue treatments (e.g., \"diphtheria\
+    \ toxin administration\", \"clodronate liposomes\")\n  EXCLUDE: administration\
+    \ routes (e.g., \"retro-orbital injection\", \"intraperitoneal injection\", \"\
+    i.v.\", \"i.p.\"), analytical methods (e.g., \"flow cytometry\", \"PCR\", \"genotyping\"\
+    , \"western blot\", \"immunoblotting\"), sample preparation (e.g., \"immunoprecipitation\"\
+    , \"lysis\", \"centrifugation\", \"washing\"), general procedures (e.g., \"adoptive\
+    \ transfer\" without specifying what, \"transfection\" as a method)\n- SampleTreatment:\
+    \ sample processing methods (e.g., \"FFPE\", \"snap frozen\", \"fresh frozen\"\
+    , \"fixed\")\n- Staining: staining methods (e.g., \"Coomassie blue\", \"H&E\"\
+    , \"silver stain\")\n- GrowthRate: growth conditions (e.g., \"exponential phase\"\
+    , \"OD600 = 0.6\")\n- SamplingTime: time points (e.g., \"ZT6\", \"day 1\", \"\
+    T0\", \"T24\")\n- BMI: body mass index (e.g., \"BMI 25-30\", \"BMI > 30\")\n-\
+    \ AnatomicSiteTumor: tumor anatomical location (e.g., \"primary tumor\", \"left\
+    \ lobe\")\n- OriginSiteDisease: disease origin site (e.g., \"primary site\")\n\
+    - TumorCellularity: tumor cellularity (e.g., \"80%\", \">70% tumor cells\")\n\
+    - TumorGrade: tumor grade (e.g., \"Grade 1\", \"Grade 2\", \"well-differentiated\"\
+    , \"poorly differentiated\")\n- TumorStage: tumor stage (e.g., \"Stage I\", \"\
+    T3\", \"N1\", \"M0\", \"TNM\")\n- TumorSize: tumor size (e.g., \"2 cm\", \"5 cm\
+    \ diameter\")\n- TumorSite: tumor site (e.g., \"primary site\", \"metastatic lesion\"\
+    )\n\nCRITICAL RULES:\n1. Convert ALL cell markers to cell type names in the extraction\
+    \ step\n2. Filter OUT analytical methods and injection routes from Treatment field\n\
+    3. Standardize cell lines: \"HEK 293\"\xE2\u2020\u2019\"HEK293\", \"MCF7\"/\"\
+    MCF-7\"\xE2\u2020\u2019\"MCF-7\"\n4. Standardize diseases: provide full name with\
+    \ abbreviation if common\n5. For cell types, prefer: \"CD8+ T cells\" over just\
+    \ \"T cells\", \"regulatory T cells (Tregs)\" over \"Tregs\"\n\nReturn JSON only,\
+    \ no markdown. Empty list if field not found.\n"
+  type: map
+optimizer_config:
+  enable_optimizer: true
+  optimizer_model: gpt-4o
+  sample_size: 5
+  validation_sample_size: 3
+pipeline:
+  output:
+    intermediate_dir: ./checkpoints
+    path: ./output/clinical_experimental_complete.json
+    type: file
+  steps:
+  - input: papers
+    name: clinical_experimental_pipeline
+    operations:
+    - extract_clinical_info
+    - unnest_disease
+    - resolve_disease
+    - unnest_cell_line
+    - resolve_cell_line
+    - unnest_cell_type
+    - resolve_cell_type
+    - unnest_treatment
+    - resolve_treatment
+    - aggregate_clinical_data

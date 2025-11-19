@@ -1,0 +1,185 @@
+datasets:
+  papers:
+    path: ./papers_dataset.json
+    type: file
+default_model: gpt-4o
+max_threads: 4
+operations:
+- model: gpt-4o
+  name: aggregate_separation
+  output:
+    schema:
+      baits: list[string]
+      flow_rates: list[string]
+      fractionation_methods: list[string]
+      gradient_times: list[string]
+      number_of_fractions: list[string]
+      separation_techniques: list[string]
+      temperatures: list[string]
+      times: list[string]
+      unique_chromatography_methods: list[string]
+      unique_enrichment_methods: list[string]
+  prompt: "Aggregate and deduplicate separation/chromatography for: {{ reduce_key.filename\
+    \ }}\n\n{% for doc in inputs %}\nChromatography: {% if doc.canonical_chromatography\
+    \ %}{{ doc.canonical_chromatography }}{% endif %}\nEnrichment: {% if doc.canonical_enrichment\
+    \ %}{{ doc.canonical_enrichment }}{% endif %}\nGradient: {% for g in doc.GradientTime\
+    \ %}{{ g }}, {% endfor %}\nFlow rate: {% for f in doc.FlowRateChromatogram %}{{\
+    \ f }}, {% endfor %}\nFractions: {% for n in doc.NumberOfFractions %}{{ n }},\
+    \ {% endfor %}\nSeparation: {% for s in doc.Separation %}{{ s }}, {% endfor %}\n\
+    Fractionation: {% for fm in doc.FractionationMethod %}{{ fm }}, {% endfor %}\n\
+    Baits: {% for b in doc.Bait %}{{ b }}, {% endfor %}\nTimes: {% for tm in doc.Time\
+    \ %}{{ tm }}, {% endfor %}\nTemperature: {% for t in doc.Temperature %}{{ t }},\
+    \ {% endfor %}\n{% endfor %}\n\nIMPORTANT NORMALIZATION RULES:\n1. Normalize temperatures\
+    \ to standard format with degree symbol:\n   - \"37degreesC\" \xE2\u2020\u2019\
+    \ \"37\xC2\xB0C\"\n   - \"4 degreesC\" \xE2\u2020\u2019 \"4\xC2\xB0C\"\n   - \"\
+    room temperature\" \xE2\u2020\u2019 keep as-is\n   - \"-80degreesC\" \xE2\u2020\
+    \u2019 \"-80\xC2\xB0C\"\n   - \"98 degreesC\" \xE2\u2020\u2019 \"98\xC2\xB0C\"\
+    \n   - \"on ice\" \xE2\u2020\u2019 \"4\xC2\xB0C\"\n\n2. Normalize flow rates:\n\
+    \   - \"250 nL per minute\" \xE2\u2020\u2019 \"250 nL/min\"\n   - \"300 nl min-1\"\
+    \ \xE2\u2020\u2019 \"300 nL/min\"\n   - \"4 microL/min\" \xE2\u2020\u2019 \"4\
+    \ \xC2\xB5L/min\"\n   - \"200 nL/min\" \xE2\u2020\u2019 keep as-is\n\n3. Remove\
+    \ redundancies:\n   - If \"C18\" is in chromatography_methods, don't include \"\
+    C18 column\" in separation_techniques\n   - If \"reversed-phase\" is in chromatography_methods,\
+    \ only include it once in separation_techniques if it appears in different context\n\
+    \nReturn deduplicated JSON with unique, normalized values for all fields.\n"
+  reduce_key:
+  - filename
+  type: reduce
+- blocking_keys:
+  - EnrichmentMethod
+  blocking_threshold: 0.85
+  comparison_model: gpt-4o-mini
+  comparison_prompt: "Are these the same enrichment method?\nMethod 1: \"{{ input1.EnrichmentMethod\
+    \ }}\"\nMethod 2: \"{{ input2.EnrichmentMethod }}\"\n\nEquivalences: \"IMAC\"\
+    =\"immobilized metal affinity chromatography\", \"TiO2\"=\"titanium dioxide\"\
+    , \"IP\"=\"immunoprecipitation\"=\"antibody enrichment\", \"SNA-I\"=\"Sambucus\
+    \ nigra lectin\", \"ConA\"=\"concanavalin A\", \"streptavidin capture\"=\"biotin-streptavidin\
+    \ enrichment\"\nDifferent: IMAC\xE2\u2030\_TiO2\xE2\u2030\_IP, \"phosphopeptide\
+    \ enrichment\"\xE2\u2030\_\"IMAC\", lectin chromatography\xE2\u2030\_antibody\
+    \ enrichment\nReturn \"True\" if same technique, \"False\" if different.\n"
+  embedding_model: text-embedding-3-small
+  model: gpt-4o
+  name: resolve_enrichment
+  output:
+    schema:
+      canonical_enrichment: string
+  resolution_model: gpt-4o
+  resolution_prompt: "Standardize these enrichment methods (prefer full name with\
+    \ abbreviation):\n{% for entry in inputs %}{{ entry.EnrichmentMethod }}{% if not\
+    \ loop.last %}, {% endif %}{% endfor %}\n\nExamples: [\"IMAC\",\"immobilized metal\
+    \ affinity chromatography\"]\xE2\u2020\u2019\"immobilized metal affinity chromatography\
+    \ (IMAC)\", [\"TiO2\",\"titanium dioxide\"]\xE2\u2020\u2019\"titanium dioxide\
+    \ (TiO2) enrichment\", [\"SNA-I\",\"lectin chromatography\"]\xE2\u2020\u2019\"\
+    SNA-I lectin chromatography\", [\"immunoprecipitation\",\"IP\"]\xE2\u2020\u2019\
+    \"immunoprecipitation\"\nReturn ONLY the canonical name.\n"
+  type: resolve
+- keep_empty: true
+  model: gpt-4o
+  name: unnest_enrichment
+  type: unnest
+  unnest_key: EnrichmentMethod
+- blocking_keys:
+  - Chromatography
+  blocking_threshold: 0.85
+  comparison_model: gpt-4o-mini
+  comparison_prompt: "Are these the same chromatography method?\nMethod 1: \"{{ input1.Chromatography\
+    \ }}\"\nMethod 2: \"{{ input2.Chromatography }}\"\n\nEquivalences: \"SCX\"=\"\
+    strong cation exchange\", \"RP\"=\"reversed-phase\", \"UPLC\"=\"UHPLC\"=\"nano-LC\"\
+    , \"HILIC\"=\"hydrophilic interaction chromatography\"\nDifferent: C18\xE2\u2030\
+    \_C8\xE2\u2030\_C4 (column types), SCX\xE2\u2030\_WCX, RP\xE2\u2030\_normal-phase,\
+    \ C18\xE2\u2030\_\"reversed-phase\"\nReturn \"True\" if same technique, \"False\"\
+    \ if different.\n"
+  embedding_model: text-embedding-3-small
+  model: gpt-4o
+  name: resolve_chromatography
+  output:
+    schema:
+      canonical_chromatography: string
+  resolution_model: gpt-4o
+  resolution_prompt: "Standardize these chromatography methods (prefer full name with\
+    \ specific details):\n{% for entry in inputs %}{{ entry.Chromatography }}{% if\
+    \ not loop.last %}, {% endif %}{% endfor %}\n\nExamples: [\"SCX\",\"strong cation\
+    \ exchange\"]\xE2\u2020\u2019\"strong cation exchange chromatography (SCX)\",\
+    \ [\"RP\",\"reversed-phase\"]\xE2\u2020\u2019\"reversed-phase chromatography (RP)\"\
+    , [\"C18\"]\xE2\u2020\u2019\"C18 reversed-phase column\"\nReturn ONLY the canonical\
+    \ name.\n"
+  type: resolve
+- keep_empty: true
+  model: gpt-4o
+  name: unnest_chromatography
+  type: unnest
+  unnest_key: Chromatography
+- gleaning:
+    num_rounds: 1
+    validation_prompt: 'Check if extraction missed: (1) chromatography methods, (2)
+      enrichment methods (including lectin-based, antibody-based, and traditional
+      IMAC/TiO2), (3) gradient times, (4) common terms (SDS-PAGE, SCX, C18, IMAC,
+      TiO2, immunoprecipitation, lectin chromatography).
+
+      Return: {"passes_validation": true/false, "critical_omissions": [...], "next_round_instructions":
+      "..."}
+
+      '
+  model: gpt-4o
+  name: extract_separation
+  output:
+    schema:
+      Bait: list[string]
+      Chromatography: list[string]
+      EnrichmentMethod: list[string]
+      FlowRateChromatogram: list[string]
+      FractionIdentifier: list[string]
+      FractionationFraction: list[string]
+      FractionationMethod: list[string]
+      GradientTime: list[string]
+      NumberOfFractions: list[string]
+      Separation: list[string]
+      Temperature: list[string]
+      Time: list[string]
+  prompt: "Extract separation and chromatography information from this proteomics\
+    \ paper.\n\nPaper: {{ input.filename }}\n{% if input.methods %}Methods: {{ input.methods\
+    \ }}{% endif %}\n{% if input.supplementary_information %}Supplementary: {{ input.supplementary_information\
+    \ }}{% endif %}\n\nExtract ALL variations of:\n- Separation: pre-MS separation\
+    \ (e.g., \"SDS-PAGE\", \"SCX chromatography\", \"reversed-phase\", \"IEF\", \"\
+    SEC\")\n- Chromatography: chromatography systems (e.g., \"SCX\", \"strong cation\
+    \ exchange\", \"RP\", \"C18\", \"UPLC\", \"HILIC\")\n- FractionationMethod: fractionation\
+    \ techniques (e.g., \"high-pH RP\", \"SCX fractionation\", \"offline fractionation\"\
+    )\n- FractionationFraction: fraction details (e.g., \"12 fractions\", \"24 fractions\"\
+    )\n- FractionIdentifier: fraction IDs (e.g., \"fraction 1\", \"F1-F12\")\n- NumberOfFractions:\
+    \ total fractions (e.g., \"12\", \"24\", \"96\")\n- EnrichmentMethod: enrichment\
+    \ techniques including traditional and affinity-based methods (e.g., \"IMAC\"\
+    , \"immobilized metal affinity chromatography\", \"TiO2\", \"titanium dioxide\
+    \ enrichment\", \"phosphopeptide enrichment\", \"lectin chromatography\", \"lectin\
+    \ affinity\", \"SNA-I lectin\", \"ConA\", \"concanavalin A\", \"WGA\", \"antibody\
+    \ enrichment\", \"immunoprecipitation\", \"immunoaffinity\", \"affinity capture\"\
+    , \"streptavidin capture\", \"biotin-streptavidin enrichment\")\n- Bait: affinity\
+    \ baits (e.g., \"anti-FLAG\", \"protein A\", \"streptavidin\", \"anti-OVA antibody\"\
+    , \"Dynabeads\")\n- FlowRateChromatogram: flow rates (e.g., \"300 nL/min\", \"\
+    0.3 \xC2\xB5L/min\")\n- GradientTime: gradient duration (e.g., \"120 min\", \"\
+    90 min gradient\")\n- Time: time durations (e.g., \"30 min\", \"1 h\", \"105 min\"\
+    , \"overnight\", \"8 hours\", \"30 minutes\", \"1 day\", \"2 days\")\n- Temperature:\
+    \ temperatures (e.g., \"37\xC2\xB0C\", \"room temperature\", \"4\xC2\xB0C\", \"\
+    on ice\", \"-80\xC2\xB0C\")\n\nNote: Chromatography methods appear in BOTH Separation\
+    \ AND Chromatography fields.\nReturn JSON only, no markdown. Empty list if field\
+    \ not found.\n"
+  type: map
+optimizer_config:
+  enable_optimizer: true
+  optimizer_model: gpt-4o
+  sample_size: 5
+  validation_sample_size: 3
+pipeline:
+  output:
+    intermediate_dir: ./checkpoints
+    path: ./output/separation_complete.json
+    type: file
+  steps:
+  - input: papers
+    name: separation_pipeline
+    operations:
+    - extract_separation
+    - unnest_chromatography
+    - resolve_chromatography
+    - unnest_enrichment
+    - resolve_enrichment
+    - aggregate_separation
