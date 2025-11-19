@@ -1,0 +1,74 @@
+AcquisitionMethod: LC-MS/MS
+AcquisitionMethod: data-dependent
+AcquisitionMethod: MS2
+AcquisitionMethod: MS3
+AcquisitionMethod: HCD MS/MS
+AcquisitionMethod: CID MS/MS
+AcquisitionMethod: synchronous precursor selection
+AlkylationReagent: iodoacetamide (IAA)
+Chromatography: Sep-Pak C18
+Chromatography: HPLC
+CleavageAgent: Lys-C
+CleavageAgent: trypsin
+EnrichmentMethod: immobilized metal affinity chromatography (IMAC)
+Experiment: proteomics
+Experiment: phosphoproteomics
+FactorValue: phosphosites from Human, P. falciparum, and P. knowlesi proteins
+FactorValue: between DMSO and RAP-treated samples
+FactorValue: between NF54 parental line and the P. knowlesi iRBC line for Human proteins
+FlowRate: 0.8 mL/minute
+FlowRate: 250 nL/minute
+FlowRate: 1 mL/min
+FractionationMethod: SCX fractionation
+FractionationMethod: high-pH RP fractionation
+FractionationMethod: High pH sample fractionation
+FragmentationMethod: Higher-energy collisional dissociation
+FragmentationMethod: Collision-induced dissociation
+GradientTime: 20 minutes
+GradientTime: 5 minutes
+GradientTime: 40 minutes
+GradientTime: 150 minutes
+GradientTime: 155 minutes
+Instrument: RSLC nano U3000
+Instrument: Agilent 1200
+Instrument: EasySpray nano source
+Instrument: Thermo Fisher Scientific
+Instrument: Thermo Scientific Orbitrap Lumos
+Instrument: Thermo Scientific Q Exactive Mass Spectrometer
+IonizationType: electrospray ionization
+IonizationType: EasySpray
+Label: TMT10plex
+MS2Analyzer: Orbitrap
+MissedCleavages: 2
+MissedCleavages: 3
+Modification: phosphorylation
+Modification: acetylation
+Modification: carbamidomethylation
+Modification: oxidation
+Modification: deamidation
+NumberOfFractions: 12
+NumberOfTechnicalReplicates: triplicate
+Organism: Plasmodium knowlesi
+Organism: Plasmodium falciparum
+Organism: Homo sapiens
+OrganismPart: red blood cells
+QuantificationMethod: TMT
+ReductionReagent: DTT
+ReductionReagent: dithiothreitol
+SampleTreatment: snap frozen
+SearchEngine: MaxQuant
+SearchEngine: Andromeda
+Separation: reversed-phase
+Separation: strong cation exchange
+Staining: Giemsa
+Strain: NF54
+Strain: 1G5
+Strain: 3D7
+Strain: FIKK10.2
+TechnologyType: LC-MS/MS
+Temperature: 37degreesC
+Temperature: 4degreesC
+Temperature: room temperature
+Treatment: treatment with DMSO
+Treatment: treatment with rapamycin
+Treatment: treatment with RAP

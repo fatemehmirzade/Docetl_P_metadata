@@ -1,0 +1,28 @@
+AlkylationReagent: iodoacetamide (IAA)
+CellLine: HT1080
+CellLine: DT40
+CellLine: HeLa
+CleavageAgent: trypsin
+ConcentrationOfCompound: 10 mM
+ConcentrationOfCompound: 55 mM
+Experiment: proteomics
+Instrument: LTQ-Orbitrap
+Instrument: Thermo Fisher Scientific
+MissedCleavages: maximum of two
+Modification: carbamidomethylation of cysteine
+Modification: oxidation of methionine
+Modification: acetylation
+Modification: single, di- and tri-methylation of lysine
+Modification: single and di-methylation of arginine
+Modification: phosphorylation
+Organism: Gallus gallus
+Organism: Homo sapiens
+ReductionReagent: dithiothreitol
+ReductionReagent: DTT
+SampleTreatment: frozen in liquid nitrogen
+SearchEngine: MaxQuant
+SearchEngine: Andromeda
+Separation: SDS-PAGE
+Temperature: 37 degreesC
+Temperature: 4 degreesC
+Temperature: ambient temperature

@@ -1,0 +1,67 @@
+AcquisitionMethod: LC-MS/MS
+AcquisitionMethod: tandem mass spectrometry
+AcquisitionMethod: data-dependent acquisition
+AcquisitionMethod: top 10 method
+AlkylationReagent: chloroacetamide (CAA)
+CellLine: HeLa
+CellLine: U2-OS
+Chromatography: C18
+CleavageAgent: Lys-C
+CleavageAgent: trypsin
+Experiment: proteomics
+FactorValue: heat shock vs control
+FactorValue: MG-132 vs control
+FactorValue: PR-619 vs control
+FlowRate: 250 nL per minute
+FragmentationMethod: higher-energy collisional dissociation
+GradientTime: 120 minute gradient
+Instrument: Thermo
+Instrument: Thermo Scientific Q Exactive
+Instrument: EASY-nLC
+Label: LFQ
+MS2Analyzer: Orbitrap
+MissedCleavages: up to 3
+Modification: acetylation
+Modification: carbamidomethylation
+Modification: methionine oxidation
+Modification: QQTGG
+Modification: pyro-QQTGG
+Modification: lysine acetylation
+Modification: serine-threonine-tyrosine phosphorylation
+NumberOfTechnicalReplicates: hexuplicate
+NumberOfTechnicalReplicates: 11 technical replicates
+NumberOfTechnicalReplicates: triplicate
+NumberOfTechnicalReplicates: 6 technical replicates
+NumberOfTechnicalReplicates: quintuplicate
+NumberOfTechnicalReplicates: 9 technical replicates
+Organism: Homo sapiens
+QuantificationMethod: label-free quantification (LFQ)
+ReductionReagent: DTT
+ReductionReagent: dithiothreitol
+ReductionReagent: beta-mercaptoethanol
+SampleTreatment: frozen
+SearchEngine: MaxQuant
+SearchEngine: Andromeda
+Separation: SDS-PAGE
+Separation: reversed-phase
+Separation: C18
+Staining: Coomassie
+Strain: U2-OS
+TechnologyType: mass spectrometric analysis
+TechnologyType: proteomics
+Temperature: room temperature
+Temperature: 4degreesC
+Temperature: 20degreesC
+Temperature: 37degreesC
+Temperature: 43degreesC
+Temperature: -80degreesC
+Treatment: MG-132
+Treatment: PR-619
+Treatment: heat shock
+Treatment: Trichostatin A
+Treatment: TSA
+Treatment: curcumin
+Time: 7 hours
+Time: 18 hours
+Time: 24 hours
+Time: overnight

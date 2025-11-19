@@ -1,0 +1,52 @@
+AcquisitionMethod: DDA
+AcquisitionMethod: data-dependent acquisition
+AcquisitionMethod: DIA
+AcquisitionMethod: data-independent acquisition
+AcquisitionMethod: LC-MS/MS
+AlkylationReagent: iodoacetamide
+Chromatography: C18
+Chromatography: strong anion exchange
+Chromatography: RP-HPLC
+CleavageAgent: trypsin
+Experiment: proteomics
+FlowRate: 300 nL/min
+FractionationMethod: strong anion-exchange fractionation
+FractionationMethod: SAX stage tip-based fractionation
+FragmentationMethod: Higher-Energy Collisional Dissociation
+GradientTime: 90 min gradient
+GradientTime: 120 min gradient
+Instrument: Q-Exactive HF-X (Thermo Fisher)
+Instrument: EASY-nLC 1000 (Thermo Fisher)
+Instrument: Q-Exactive Plus (Thermo Fisher)
+Instrument: EASY-nLC 1200 (Thermo Fisher)
+Instrument: RP-HPLC EasySpray column (Thermo Fisher)
+Label: label-free
+MS2Analyzer: Orbitrap
+Modification: carbamidomethylation
+Modification: acetylation
+Modification: oxidation
+NumberOfFractions: 6
+NumberOfSamples: 21 samples
+NumberOfSamples: 24 samples
+Organism: Homo sapiens
+OrganismPart: tumor
+OrganismPart: mammary gland
+OrganismPart: breast
+QuantificationMethod: iRT
+QuantificationMethod: label-free quantification (LFQ)
+ReductionReagent: dithiothreitol
+ReductionReagent: beta-mercaptoethanol
+SearchEngine: Comet
+SearchEngine: Andromeda
+SearchEngine: MaxQuant
+Separation: strong anion exchange columns (SAX)
+Separation: RP-HPLC
+Sex: female
+TechnologyType: LC-MS/MS
+Temperature: -80 degreesC
+Temperature: 37 degreesC
+Temperature: 4 degreesC
+Temperature: 60 degreesC
+Temperature: RT
+Temperature: 98 degreesC
+TumorCellularity: tumor cell area

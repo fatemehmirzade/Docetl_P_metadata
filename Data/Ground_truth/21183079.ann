@@ -1,0 +1,33 @@
+AcquisitionMethod: LC-MS/MS
+Age: three-week-old
+Age: 3 weeks
+Chromatography: reversed-phase chromatography (RP)
+Chromatography: strong cation exchange chromatography (SCX)
+ConcentrationOfCompound: 10 mg
+EnrichmentMethod: immobilized metal affinity chromatography (IMAC)
+Experiment: phosphoproteomics
+Experiment: proteomics
+Instrument: LTQ Velos Orbitrap
+Instrument: LTQ-Orbitrap
+MS2Analyzer: Orbitrap
+Modification: phosphorylation
+NumberOfSamples: 9 organs
+NumberOfTechnicalReplicates: duplicate
+Organism: Mus musculus
+OrganismPart: pancreas
+OrganismPart: kidney
+OrganismPart: heart
+OrganismPart: spleen
+OrganismPart: brain
+OrganismPart: testis
+OrganismPart: brown fat
+OrganismPart: lung
+OrganismPart: liver
+QuantificationMethod: spectral counting
+SearchEngine: Sequest
+Separation: strong cation exchange chromatography
+Separation: SDS-PAGE
+Sex: male
+Strain: Swiss-Webster
+TechnologyType: proteomics
+Treatment: overnight feeding

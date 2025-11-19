@@ -1,0 +1,45 @@
+AcquisitionMethod: LC-MS/MS
+AcquisitionMethod: data-dependent acquisition
+Bait: antibody
+Bait: Protein A
+Bait: PrA
+Bait: IgG
+CellLine: D. papillatum
+Chromatography: C18
+CleavageAgent: trypsin
+Experiment: interactomics
+Experiment: mass spectrometry
+Experiment: proteomics
+FlowRate: 250 nl/min
+FractionationMethod: sucrose gradient
+FragmentationMethod: Higher-Energy Collisional Dissociation
+GradientTime: 74 min
+GradientTime: 8 min
+Instrument: Easy-nLC 1200
+Instrument: Thermo Fisher Scientific
+IonizationType: Nanospray Flex Ion Source
+MS2Analyzer: Orbitrap
+MS2Analyzer: ion trap
+NumberOfTechnicalReplicates: quadruplicate
+NumberOfTechnicalReplicates: triplicate
+Organism: Diplonema papillatum
+QuantificationMethod: iBAQ (intensity-Based Absolute Quantification)
+QuantificationMethod: precursor intensity-based protein quantification
+ReductionReagent: DTT
+ReductionReagent: dithiothreitol
+SampleTreatment: snap frozen
+SearchEngine: Philosopher v4.0.0
+SearchEngine: MSFragger v3.3
+SearchEngine: IonQuant v1.7.5
+Separation: 10% Tris-tricine SDS-PAGE
+Strain: ATCC 50162
+TechnologyType: LC-MS/MS
+Temperature: 4 degreesC
+Temperature: 15-22 degreesC
+Temperature: 27 degreesC
+Temperature: -70 degreesC
+Temperature: 95 degreesC
+Temperature: 37 degreesC
+Temperature: 250 degreesC
+Temperature: room temperature
+Temperature: on ice

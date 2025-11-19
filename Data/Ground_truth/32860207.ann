@@ -1,0 +1,36 @@
+AcquisitionMethod: LC-MS/MS
+AlkylationReagent: iodoacetamide (IAA)
+CellLine: Hs766t
+Chromatography: C18
+CleavageAgent: trypsin
+Disease: pancreatic ductal adenocarcinoma (PDAC)
+Experiment: proteomics
+FlowRate: 300 nl/min
+FragmentationMethod: Higher-energy collisional dissociation
+GradientTime: 75 min
+GradientTime: 100 min inject-to-inject
+Instrument: Thermo Scientific Q Exactive Mass Spectrometer
+IonizationType: electrospray ionization
+Label: label-free
+MS2Analyzer: Orbitrap
+MissedCleavages: up to two missed cleavages
+MissedCleavages: 2
+Modification: cysteine carboxamidomethylation
+Modification: methionine oxidation
+Modification: N-terminal acetylation
+NumberOfSamples: 39 patients
+NumberOfSamples: 20 samples
+Organism: Homo sapiens
+OrganismPart: cells
+OrganismPart: pancreas
+QuantificationMethod: label-free quantification (LFQ)
+ReductionReagent: DTT
+ReductionReagent: dithiothreitol
+SearchEngine: MaxQuant
+Separation: SDS-PAGE
+TechnologyType: LC-MS/MS
+Temperature: 56 degreesC
+Temperature: room temperature
+Temperature: 25 degreesC
+Temperature: 60 degreesC
+TumorCellularity: >5% tumor surface

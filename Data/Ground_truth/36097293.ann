@@ -1,0 +1,45 @@
+AcquisitionMethod: LC-MS/MS, data-dependent mode
+Bait: GST
+Bait: Protein A
+CellLine: crm1T539C mutant strain
+CellLine: Saccharomyces cerevisiae
+CellLine: LmB-sensitive mutant strain
+Chromatography: size exclusion chromatography
+Chromatography: liquid chromatography
+CleavageAgent: trypsin
+Experiment: proteomics
+Experiment: crosslinking MS
+Experiment: Cryo-EM
+FlowRate: 300 nl/minute
+FractionationMethod: size exclusion chromatography fractionation
+FragmentationMethod: CID
+GradientTime: 80-minute gradient
+Instrument: Thermo Scientific
+Instrument: Orbitrap
+Instrument: Orbitrap Fusion
+MS2Analyzer: ion trap
+NumberOfFractions: 4
+Organism: yeast
+Organism: Bacteria
+Organism: Saccharomyces cerevisiae
+Organism: Escherichia coli
+PrecursorMassTolerance: 10 ppm
+QuantificationMethod: label-free quantification (LFQ)
+ReductionReagent: DTT
+ReductionReagent: dithiothreitol
+SearchEngine: xQuest/xProphet
+Separation: size exclusion chromatography
+Separation: liquid chromatography
+Strain: crm1T539C
+Strain: Rosetta (DE3) pLysS
+TechnologyType: LC-MS/MS
+Temperature: 25 degreesC
+Temperature: 4 degreesC
+Temperature: -20 degreesC
+Temperature: 37 degreesC
+Temperature: 16 degreesC
+Treatment: LmB treatment
+Treatment: diazaborine treatment
+Treatment: Drug treatment of GFP/mCherry-tagged strains
+Treatment: Drg1 purification
+Treatment: crosslinking

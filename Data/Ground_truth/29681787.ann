@@ -1,0 +1,42 @@
+AcquisitionMethod: LC-MS/MS
+AlkylationReagent: iodoacetamide (IAA)
+Chromatography: C18
+Chromatography: reversed-phase liquid chromatography (RP-HPLC)
+CleavageAgent: trypsin
+Disease: colorectal cancer (CRC)
+Experiment: proteomics
+FlowRate: 4 microL/min
+FlowRate: 200 nL/min
+FragmentationMethod: Collision-induced dissociation
+GradientTime: 240 min
+Instrument: Thermo Fisher Scientific
+Instrument: Dionex Ultimate 3000 nanoHPLC System
+Instrument: Thermo Scientific Q Exactive Mass Spectrometer
+IonizationType: EasySpray source
+MS2Analyzer: Orbitrap
+MissedCleavages: 2 miscleavages
+MissedCleavages: 2
+Modification: Carbamidomethylation
+Modification: Methionine oxidation
+Modification: Protein N-terminal acetylation
+Organism: Homo sapiens
+OrganismPart: rectal
+OrganismPart: tumor tissues
+ReductionReagent: Dithiothreitol
+SearchEngine: MaxQuant
+Separation: in-gel separation
+Separation: high performance liquid chromatography separation
+Staining: haematoxylin and eosin
+Staining: Coomassie Blue
+Temperature: 98 degreesC
+Temperature: 37 degreesC
+Temperature: 40 degreesC
+Time: 30 min
+Time: overnight
+TumorGrade: TRG0 complete regression (non-viable cancer cells)
+TumorGrade: TRG1 near complete regression (single or small groups of tumor cells)
+TumorGrade: TRG2 moderate regression (residual cancer outgrown by fibrosis)
+TumorGrade: TRG3 minimal/absent regression (minimal or no tumor cells killed)
+TumorStage: T3-T4, any N, M0/any T, N1-N2, M0
+TumorStage: iTNM
+TumorStage: ypTNM

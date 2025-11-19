@@ -1,0 +1,53 @@
+AcquisitionMethod: LC-MS/MS
+AcquisitionMethod: DDA
+AcquisitionMethod: DIA
+AlkylationReagent: iodoacetamide (IAA)
+CellLine: C2C12
+Chromatography: PepMap 100 C18
+Chromatography: High pH Reversed-Phase
+Chromatography: PepMap C18
+CleavageAgent: trypsin
+Experiment: proteomics
+FractionationMethod: Protein Fractionation by SDS-PAGE
+FractionationMethod: Peptide Fractionation by High pH Reversed Phase Chromatography
+FragmentationMethod: Higher-energy collisional dissociation
+GradientTime: 120 min gradient
+GradientTime: 120 min
+Instrument: Q Exactive HF mass spectrometer
+Instrument: Dionex Ultimate 3000 nanoHPLC System
+IonizationType: electrospray ionization
+MS2Analyzer: Orbitrap
+MissedCleavages: two missed cleavages
+Modification: carbamidomethylation
+Modification: oxidation
+Modification: Gln->pyro-Glu
+Modification: deamidated
+Modification: ammonium
+Modification: ammonia-loss
+NumberOfFractions: 10
+NumberOfFractions: 8
+NumberOfTechnicalReplicates: triplicate
+Organism: Equus caballus
+Organism: Mus musculus
+Organism: Bos taurus
+Organism: Homo sapiens
+Organism: Gallus gallus
+Organism: Candida rugosa
+Organism: Aspergillus niger
+OrganismPart: skeletal muscle
+OrganismPart: blood plasma
+QuantificationMethod: quantifications using area of XIC peaks
+QuantificationMethod: Top3 peptide abundancies
+ReductionReagent: dithiothreitol
+ReductionReagent: DTT
+SearchEngine: X!Tandem
+SearchEngine: MS-GF+
+SearchEngine: Mascot
+SearchEngine: Mascot 2.5
+Separation: SDS-PAGE
+Separation: reversed-phase
+Separation: high pH Reversed-Phase
+Temperature: 37 degreesC
+Temperature: room temperature
+Temperature: 56 degreesC
+Temperature: 250 degreesC

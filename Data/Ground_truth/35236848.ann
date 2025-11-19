@@ -1,0 +1,31 @@
+AcquisitionMethod: data-dependent
+Age: 2-week-old seedlings
+Age: 4-day-old seedlings
+Age: 10-day-old seedlings
+Chromatography: two-dimensional thin layer chromatography (TLC)
+CleavageAgent: trypsin
+Experiment: gene expression analysis
+Experiment: MeRIP-Seq
+Experiment: in vivo interaction proteomics-mass spectrometry
+Experiment: proteomics
+Instrument: Thermo Fisher Scientific
+Instrument: LTQ Orbitrap Velos Pro
+Label: label-free quantification (LFQ)
+MS2Analyzer: Orbitrap
+Organism: Arabidopsis thaliana
+OrganismPart: leaves
+OrganismPart: roots
+OrganismPart: seedlings
+QuantificationMethod: label-free quantification (LFQ)
+ReductionReagent: DTT
+ReductionReagent: dithiothreitol
+SearchEngine: MaxQuant
+Separation: SDS-PAGE
+Strain: ecotype Colombia-0
+Temperature: 4 degreesC
+Temperature: 37 degreesC
+Temperature: 22 degreesC
+Temperature: 18 degreesC
+Temperature: 90 degreesC
+Treatment: 1% formaldehyde
+Treatment: 0.125 M glycine solution

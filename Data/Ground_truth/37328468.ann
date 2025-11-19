@@ -1,0 +1,32 @@
+AcquisitionMethod: LC-MS/MS
+AlkylationReagent: acrylamide
+Bait: antibody
+Bait: protein A
+CellLine: ExpiCHO-S
+Chromatography: C18 column
+Chromatography: size-exclusion chromatography (SEC)
+Chromatography: affinity chromatography
+Chromatography: protein A affinity chromatography
+CleavageAgent: trypsin
+Experiment: glycoproteomics
+FlowRate: 5 microL/min
+FragmentationMethod: Collision Induced Dissociation
+Instrument: Waters nanoEase M/Z HSS T3 C18 column
+Instrument: ZenoTOF 7600 mass spectrometer
+Instrument: Waters
+Instrument: Microscale LC system
+Instrument: SCIEX
+Organism: ExpiCHO-S cells
+MissedCleavages: two missed cleavages
+Modification: deamidation
+Modification: oxidation
+Modification: propionamide
+ReductionReagent: dithiothreitol
+SearchEngine: Byonic
+TechnologyType: LC-MS/MS
+Temperature: 4 degreesC
+Temperature: 37 degreesC
+Temperature: 30 degreesC
+Temperature: -20 degreesC
+Temperature: 95 degreesC
+Temperature: 25 degreesC

@@ -1,0 +1,56 @@
+AcquisitionMethod: DIA
+AcquisitionMethod: variable window data-independent acquisition
+AcquisitionMethod: DDA
+AcquisitionMethod: data dependent acquisition
+Age: Nine-week-old
+AlkylationReagent: iodoacetamide (IAA)
+Chromatography: PepMap100 C18
+Chromatography: EASY-nLC 1200 ultra-HPLC system
+Chromatography: C18
+Chromatography: EASY-Spray column
+CleavageAgent: trypsin
+Experiment: proteomics
+FactorValue: time points
+FlowRate: 350 nl/min
+FractionationMethod: High pH Reversed-Phase
+GradientTime: 90 min
+GradientTime: 120 min
+Instrument: Thermo Fisher Scientific
+Instrument: Q Exactive HF-X
+Instrument: FACSVerse
+Instrument: VICTOR3 Multilabel Plate Reader
+Instrument: Accuri C6 Plus
+Instrument: EASY-nLC 1200
+Label: label-free
+MS2Analyzer: Orbitrap
+NumberOfFractions: 96
+Organism: Escherichia coli
+Organism: Mus musculus
+OrganismPart: plasma
+OrganismPart: kidney
+OrganismPart: lung
+OrganismPart: liver
+OrganismPart: blood
+OrganismPart: skin
+OrganismPart: heart
+OrganismPart: spleen
+ReductionReagent: Tris(2-carboxyethyl)phosphine hydrochloride
+ReductionReagent: TCEP
+ReductionReagent: 5 mM Tris(2-carboxyethyl)phosphine hydrochloride, pH 7.0
+Sex: female
+Sex: male
+Staining: hematoxylin
+Staining: eosin
+Strain: O18:K1
+Strain: C57BL/6J
+TechnologyType: LC-MS/MS
+TechnologyType: ultra-HPLC
+TechnologyType: proteomics
+TechnologyType: shotgun proteomics
+TechnologyType: data-independent acquisition
+TechnologyType: data dependent acquisition
+Temperature: 37 degreesC
+Temperature: room temperature
+Temperature: 4 degreesC
+Treatment: Methylprednisolone at 30 mg/kg
+Treatment: Meropenem at 10 mg/kg

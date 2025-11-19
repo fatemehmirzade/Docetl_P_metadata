@@ -1,0 +1,52 @@
+AcquisitionMethod: LC-MS/MS
+AcquisitionMethod: liquid chromatography-tandem mass spectrometry
+AcquisitionMethod: data-dependent MS/MS
+AlkylationReagent: chloroacetamide
+Chromatography: C18
+Chromatography: liquid chromatography
+CleavageAgent: Lys-C
+CleavageAgent: trypsin
+Disease: Alzheimer's disease (AD)
+Experiment: proteomics
+Experiment: mass spectrometry
+Experiment: MS
+FactorValue: AD vs control
+FactorValue: differentially expressed
+FlowRate: 250 nl/min
+FractionationMethod: HiRIEF
+FragmentationMethod: Higher-energy collisional dissociation
+GradientTime: 5 min
+Instrument: ultimate 3000 RSLCnano system
+Instrument: Thermo Fisher Scientific
+Instrument: Q Exactive HF mass spectrometer
+Label: TMT10plex
+MS2Analyzer: orbitrap
+MissedCleavages: 2
+MissedCleavages: maximum 2 missed cleavages
+Modification: carbamidomethylation
+Modification: oxidation
+NumberOfFractions: 72
+NumberOfSamples: 10 cases, five sporadic AD and five control cases
+NumberOfTechnicalReplicates: No technical replicates were performed
+Organism: Homo sapiens
+OrganismPart: superior temporal cortex
+OrganismPart: prefrontal cortex
+OrganismPart: neocortex
+OrganismPart: inferior temporal cortex
+OrganismPart: hippocampus
+OrganismPart: temporal cortex
+OrganismPart: temporal lobe
+OrganismPart: brain
+OrganismPart: dentate gyrus
+QuantificationMethod: TMT
+QuantificationMethod: TMT10plex
+ReductionReagent: DTT
+ReductionReagent: dithiothreitol
+SampleTreatment: frozen
+SearchEngine: Percolator
+SearchEngine: MS-GF+
+Separation: isoelectric focusing
+Separation: HiRIEF
+TechnologyType: LC-MS/MS
+Temperature: -20 degreesC
+Temperature: 95 degreesC
