@@ -1,0 +1,11 @@
+FragmentationMethod: ecd  # False Negative
+FragmentationMethod: higher-energy collisional dissociation  # False Negative
+FragmentationMethod: cid  # False Positive
+IonizationType: esi  # False Negative
+Treatment: mascot percolator scoring  # False Negative
+Treatment: phosphopeptide identification  # False Negative
+Treatment: phosphorylation analysis  # False Negative
+Treatment: phosphorylation site localisation  # False Negative
+Treatment: protein extraction  # False Negative
+Treatment: proteome profiling  # False Negative
+Treatment: turbo-slomo scoring  # False Negative

@@ -1,0 +1,16 @@
+Chromatography: strong cation exchange chromatography (scx)  # False Positive
+CleavageAgent: chymotrypsin  # False Positive
+EnrichmentMethod: titanium dioxide (tio2) enrichment  # False Negative
+EnrichmentMethod: immobilized metal affinity chromatography (imac)  # False Positive
+FragmentationMethod: collision-induced dissociation  # False Positive
+Temperature: on ice  # False Negative
+Time: 1 h  # False Negative
+Time: 30 min  # False Negative
+Time: overnight  # False Negative
+Treatment: chymotrypsin  # False Positive
+Treatment: cytochalasin d  # False Positive
+Treatment: dmso  # False Positive
+Treatment: neuraminidase  # False Positive
+Treatment: pharmacological inhibitors  # False Positive
+Treatment: trypsin  # False Positive
+Treatment: wr99210  # False Positive

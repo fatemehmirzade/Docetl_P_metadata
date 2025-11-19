@@ -1,0 +1,8 @@
+Chromatography: lc-ms/ms  # False Positive
+Chromatography: reversed-phase liquid chromatography (rp)  # False Positive
+FragmentationMethod: collision-induced dissociation  # False Positive
+Instrument: ltq-orbitrap  # False Positive
+Instrument: nanolc  # False Positive
+Instrument: ultra-high-performance liquid chromatography  # False Positive
+SampleTreatment: frozen  # False Negative
+Separation: liquid chromatography-mass spectrometry  # False Positive

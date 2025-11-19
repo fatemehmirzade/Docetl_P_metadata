@@ -1,0 +1,4 @@
+Chromatography: c18  # False Positive
+ConcentrationOfCompound: 10 mg  # False Negative
+Instrument: orbitrap  # False Positive
+Instrument: thermo fisher  # False Positive

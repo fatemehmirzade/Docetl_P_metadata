@@ -1,0 +1,10 @@
+AcquisitionMethod: hplc-ms/ms  # False Positive
+Chromatography: reversed-phase liquid chromatography (rp-hplc)  # False Negative
+FragmentationMethod: higher-energy collisional dissociation  # False Positive
+IonizationType: nano-esi  # False Positive
+Separation: hplc-ms/ms  # False Positive
+Staining: coomassie blue  # False Negative
+Staining: haematoxylin and eosin  # False Negative
+Time: 30 min  # False Negative
+Time: overnight  # False Negative
+TumorStage: ajcc  # False Positive

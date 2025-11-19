@@ -1,0 +1,14 @@
+Disease: lung squamous cell carcinoma (scc)  # False Negative
+Disease: lung squamous cell carcinoma (lscc)  # False Positive
+Experiment: phosphoproteomics  # False Positive
+FragmentationMethod: higher-energy collisional dissociation (hcd)  # False Negative
+Instrument: rslc uplc  # False Positive
+Label: tmt6plex  # False Negative
+Label: tmt10plex  # False Positive
+TechnologyType: shotgun proteomics  # False Positive
+Time: 10 min  # False Negative
+Time: 15 min  # False Negative
+Time: 2 days  # False Negative
+Time: 20 min  # False Negative
+Time: 30 min  # False Negative
+Time: overnight  # False Negative

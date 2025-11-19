@@ -1,0 +1,6 @@
+FragmentationMethod: collision-induced dissociation  # False Positive
+Instrument: pepmap 100 c18  # False Positive
+Instrument: pepmap c18  # False Positive
+Separation: in-gel tryptic digestion  # False Positive
+Separation: in-solution tryptic digestion  # False Positive
+Strain: c2c12  # False Positive

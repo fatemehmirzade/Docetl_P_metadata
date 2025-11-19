@@ -1,0 +1,23 @@
+Bait: antibody  # False Negative
+Chromatography: c18 column  # False Negative
+IonizationType: cid  # False Positive
+Organism: 12b2 protein  # False Positive
+Organism: 1f5 protein  # False Positive
+Organism: 5b3 protein  # False Positive
+Organism: cho cells  # False Positive
+Organism: hnv prefusion f antigens  # False Positive
+Organism: mab66 protein  # False Positive
+Organism: protein data bank proteins  # False Positive
+Separation: affinity chromatography  # False Positive
+Separation: protein a affinity chromatography  # False Positive
+Separation: sec  # False Positive
+Separation: size-exclusion chromatography  # False Positive
+Treatment: affinity chromatography  # False Positive
+Treatment: cryo-em data collection  # False Positive
+Treatment: cryo-em data processing  # False Positive
+Treatment: cryo-em sample preparation  # False Positive
+Treatment: enzyme-linked immunosorbent assay  # False Positive
+Treatment: mass spectrometry glycoproteomic analysis  # False Positive
+Treatment: negative stain transmission electron microscopy  # False Positive
+Treatment: size-exclusion chromatography  # False Positive
+Treatment: transfection  # False Positive

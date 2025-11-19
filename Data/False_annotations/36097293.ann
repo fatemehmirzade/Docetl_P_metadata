@@ -1,0 +1,6 @@
+Bait: calmodulin binding peptide  # False Positive
+Chromatography: c18  # False Positive
+Chromatography: reversed-phase chromatography (rp)  # False Positive
+CleavageAgent: trypsin  # False Negative
+OrganismPart: nuclear membrane  # False Positive
+PrecursorMassTolerance: 10 ppm  # False Negative

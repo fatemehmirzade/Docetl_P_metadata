@@ -1,0 +1,6 @@
+CellLine: by4742  # False Positive
+Chromatography: reversed-phase liquid chromatography (rp)  # False Positive
+Label: tmt10plex  # False Positive
+ReductionReagent: dithiothreitol  # False Positive
+ReductionReagent: tris(2-carboxyethyl)phosphine  # False Positive
+SampleTreatment: frozen in liquid nitrogen  # False Negative

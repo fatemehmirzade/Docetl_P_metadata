@@ -1,0 +1,10 @@
+IonizationType: electrospray ionization  # False Positive
+IonizationType: esi  # False Positive
+OrganismPart: cervical cancer cells  # False Positive
+Strain: hela  # False Positive
+Time: 30 min  # False Negative
+Time: 9 h  # False Negative
+Treatment: dtt and iodoacetamide  # False Positive
+Treatment: dulbecco's modified eagle's medium supplemented with 10% fetal bovine serum and 1% antibiotics  # False Positive
+Treatment: proteasemax surfactant  # False Positive
+Treatment: trypsin digestion  # False Positive

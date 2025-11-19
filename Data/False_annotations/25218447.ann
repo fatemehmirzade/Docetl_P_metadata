@@ -1,0 +1,19 @@
+IonizationType: nanoflow electrospray ionization  # False Positive
+SampleTreatment: frozen  # False Negative
+Staining: coomassie  # False Negative
+Strain: hela  # False Positive
+Temperature: -80degreesc  # False Negative
+Time: 18 hours  # False Negative
+Time: 24 hours  # False Negative
+Time: 7 hours  # False Negative
+Time: overnight  # False Negative
+Treatment: beta-mercaptoethanol  # False Positive
+Treatment: gu-hcl  # False Positive
+Treatment: imidazole  # False Positive
+Treatment: immunoblotting  # False Positive
+Treatment: label-free quantification  # False Positive
+Treatment: lfq  # False Positive
+Treatment: pei  # False Positive
+Treatment: polyethyleneimine  # False Positive
+Treatment: sds-page  # False Positive
+Treatment: sonication  # False Positive

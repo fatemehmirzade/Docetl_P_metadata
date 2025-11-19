@@ -1,0 +1,5 @@
+Instrument: ltq orbitrap velos pro  # False Positive
+Label: strand-specific  # False Positive
+Strain: nthy-ori  # False Positive
+Temperature: on ice  # False Negative
+Time: 30 min  # False Negative

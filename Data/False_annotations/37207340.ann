@@ -1,0 +1,26 @@
+Bait: antibody  # False Negative
+Chromatography: rp  # False Positive
+Instrument: orbitrap fusion lumos tribrid mass spectrometer  # False Positive
+SampleTreatment: snap frozen  # False Negative
+Separation: sucrose gradient velocity separation  # False Positive
+Temperature: on ice  # False Negative
+Treatment: 30-kda vivaspin 500 ultrafiltration  # False Positive
+Treatment: affinity purification  # False Positive
+Treatment: chloramphenicol  # False Positive
+Treatment: cryogenically preserved  # False Positive
+Treatment: dapi  # False Positive
+Treatment: fetal bovine serum  # False Positive
+Treatment: g418  # False Positive
+Treatment: ice-cold methanol  # False Positive
+Treatment: immunoprecipitation  # False Positive
+Treatment: ip  # False Positive
+Treatment: mass spectrometry  # False Positive
+Treatment: on-bead tryptic digestion  # False Positive
+Treatment: pulverization  # False Positive
+Treatment: sucrose gradient  # False Positive
+Treatment: sucrose gradient velocity separation  # False Positive
+Treatment: triton x-100  # False Positive
+Treatment: tryptic digestion  # False Positive
+Treatment: tryptone  # False Positive
+Treatment: western blotting  # False Positive
+Treatment: yeast extract  # False Positive

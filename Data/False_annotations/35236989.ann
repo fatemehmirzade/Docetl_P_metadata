@@ -1,0 +1,13 @@
+FragmentationMethod: collision-induced dissociation (cid)  # False Negative
+Instrument: sciex  # False Negative
+Instrument: tripletof 6600 mass spectrometer  # False Negative
+ReductionReagent: dithiothreitol (dtt)  # False Positive
+Time: 105 min  # False Negative
+Treatment: flow cytometry  # False Positive
+Treatment: i.v. adjuvants with c-ova  # False Positive
+Treatment: immunoprecipitation  # False Positive
+Treatment: intracellular staining  # False Positive
+Treatment: intraperitoneal injection  # False Positive
+Treatment: magnetic-bead-based negative selection  # False Positive
+Treatment: retro-orbital injection  # False Positive
+Treatment: surface staining  # False Positive

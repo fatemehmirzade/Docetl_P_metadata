@@ -1,0 +1,3 @@
+FragmentationMethod: collision-induced dissociation  # False Positive
+Instrument: ltq-orbitrap  # False Positive
+Strain: hs766t  # False Positive

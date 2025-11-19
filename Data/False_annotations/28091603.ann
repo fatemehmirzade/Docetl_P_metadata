@@ -1,0 +1,23 @@
+ConcentrationOfCompound: 10 mm  # False Negative
+ConcentrationOfCompound: 55 mm  # False Negative
+Instrument: q exactive hf mass spectrometer  # False Positive
+OrganismPart: 6-well plates containing glass coverslips  # False Positive
+SampleTreatment: frozen in liquid nitrogen  # False Negative
+Strain: dt40  # False Positive
+Strain: hela  # False Positive
+Strain: ht1080  # False Positive
+Treatment: bioinformatic analyses  # False Positive
+Treatment: chip  # False Positive
+Treatment: chromatin immunoprecipitation  # False Positive
+Treatment: immunoelectron microscopy  # False Positive
+Treatment: immunofluorescence microscopy  # False Positive
+Treatment: in vitro binding array  # False Positive
+Treatment: live cell imaging  # False Positive
+Treatment: mass spectrometry  # False Positive
+Treatment: preparation of repo-man bound nucleosomes  # False Positive
+Treatment: proximity ligation assay  # False Positive
+Treatment: quantitative immunoblotting  # False Positive
+Treatment: quantitative real-time pcr  # False Positive
+Treatment: rescue experiments  # False Positive
+Treatment: rnai treatments  # False Positive
+Treatment: transient transfections  # False Positive

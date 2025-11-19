@@ -1,0 +1,11 @@
+Instrument: maccel c18aq resin (nest group)  # False Positive
+Instrument: magic c4 resin (michrom bioresources)  # False Positive
+Organism: hek293  # False Positive
+Separation: liquid chromatography electrospray ionization tandem mass spectrometry (lc-esi-ms/ms)  # False Positive
+Temperature: on ice  # False Negative
+Treatment: dithiothreitol reduction  # False Positive
+Treatment: iodoacetamide alkylation  # False Positive
+Treatment: lys-c digestion  # False Positive
+Treatment: methanol/chloroform precipitation  # False Positive
+Treatment: trypsin digestion  # False Positive
+Treatment: urea lysis  # False Positive

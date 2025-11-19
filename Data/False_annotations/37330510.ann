@@ -1,0 +1,14 @@
+IonizationType: electrospray ionization  # False Positive
+IonizationType: nano-esi  # False Positive
+Separation: c18  # False Positive
+Separation: c18 reversed-phase spin columns  # False Positive
+Separation: high ph reversed-phase  # False Positive
+Separation: sds-page  # False Positive
+Staining: eosin  # False Negative
+Staining: hematoxylin  # False Negative
+Treatment: meropenem at 10 mg/kg  # False Negative
+Treatment: methylprednisolone at 30 mg/kg  # False Negative
+Treatment: antibiotics  # False Positive
+Treatment: corticosteroids  # False Positive
+Treatment: intraperitoneal injection  # False Positive
+Treatment: intravenous injection  # False Positive

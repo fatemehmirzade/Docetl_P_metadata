@@ -1,0 +1,16 @@
+CellType: b cells  # False Positive
+Separation: two-dimensional thin layer chromatography (tlc)  # False Positive
+Treatment: 0.5x ms medium  # False Positive
+Treatment: 16 h light:8 h dark  # False Positive
+Treatment: 35spro:hiz1-gfp  # False Positive
+Treatment: 5% naclo  # False Positive
+Treatment: beads washing buffer  # False Positive
+Treatment: cold room (4 degreesc, dark)  # False Positive
+Treatment: fip37pro:fip37-gfp  # False Positive
+Treatment: hakaipro:hakai-gfp  # False Positive
+Treatment: hiz1pro:hiz1-gfp  # False Positive
+Treatment: honda buffer  # False Positive
+Treatment: ip dilution buffer  # False Positive
+Treatment: mtapro:mta-gfp  # False Positive
+Treatment: phytotron (16 h light:8 h dark, 22 degreesc day: 18 degreesc night)  # False Positive
+Treatment: tissue culture room (16 h light:8 h dark, 22 degreesc)  # False Positive

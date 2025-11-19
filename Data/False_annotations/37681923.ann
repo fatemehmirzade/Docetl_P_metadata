@@ -1,0 +1,6 @@
+OrganismPart: blood  # False Negative
+Separation: c18 chromatography  # False Negative
+Separation: gradient elution  # False Negative
+Separation: density gradient centrifugation  # False Positive
+Separation: nanolc-ms/ms  # False Positive
+Temperature: on ice  # False Negative

@@ -1,0 +1,25 @@
+Chromatography: reversed-phase liquid chromatography (rp)  # False Positive
+Chromatography: stage tip desalting  # False Positive
+Chromatography: strong cation exchange chromatography (scx)  # False Positive
+GradientTime: 90 min  # False Positive
+Instrument: orbitrap lumos orbitrap ms  # False Positive
+Instrument: orbitrap ms  # False Positive
+IonizationType: nano-esi  # False Positive
+SampleTreatment: snap frozen  # False Negative
+Separation: high ph sample fractionation  # False Positive
+Separation: phosphopeptide enrichment  # False Positive
+Separation: scx chromatography  # False Positive
+Separation: sep-pak desalting  # False Positive
+Separation: stage tip desalting  # False Positive
+Separation: strong cation exchange (scx) fractionation  # False Positive
+Staining: giemsa  # False Negative
+Strain: fikk4.1::dicre  # False Positive
+Treatment: drug selection  # False Positive
+Treatment: drug-selected  # False Positive
+Treatment: magnet purification  # False Positive
+Treatment: parasite culture  # False Positive
+Treatment: percoll purification  # False Positive
+Treatment: percoll synchronization  # False Positive
+Treatment: synchronization  # False Positive
+Treatment: temperature control  # False Positive
+Treatment: treatment with sds  # False Positive

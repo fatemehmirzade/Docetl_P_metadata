@@ -1,0 +1,13 @@
+Chromatography: hplc  # False Positive
+Chromatography: nano-electrospray ion source  # False Positive
+Chromatography: sds-page  # False Positive
+Label: human mammary epithelial cells (hmec)  # False Negative
+Organism: cells  # False Positive
+SampleTreatment: formalin-fixed paraffin-embedded  # False Negative
+Separation: sds-page  # False Positive
+Staining: hematoxylin and eosin  # False Negative
+Strain: hcc1599  # False Positive
+Strain: hcc1937  # False Positive
+Strain: hcc2218  # False Positive
+Strain: hmec  # False Positive
+Strain: mcf7  # False Positive

@@ -1,0 +1,16 @@
+AcquisitionMethod: hplc  # False Positive
+AcquisitionMethod: lc-ms  # False Positive
+Chromatography: lc-ms/ms  # False Positive
+Chromatography: reversed-phase chromatography (rp)  # False Positive
+EnrichmentMethod: titanium dioxide (tio2)  # False Negative
+NumberOfFractions: 1  # False Positive
+NumberOfFractions: 10-16  # False Positive
+NumberOfFractions: 2-4  # False Positive
+NumberOfFractions: 5-7  # False Positive
+Separation: reverse-phase lc-ms/ms  # False Positive
+Staining: coomassie blue  # False Negative
+Strain: o+ human rbc  # False Positive
+Treatment: dimethyl sulphoxide  # False Positive
+Treatment: n-(trans-epoxysuccinyl)-l-leucine 4-guanidinobutylamide (e-64)  # False Positive
+Treatment: sorbitol treatment  # False Positive
+Treatment: wr99210  # False Positive
