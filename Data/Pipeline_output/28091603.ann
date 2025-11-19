@@ -1,0 +1,45 @@
+AlkylationReagent: iodoacetamide (IAA)
+CellLine: HT1080
+CellLine: DT40
+CellLine: HeLa
+CleavageAgent: trypsin
+Experiment: proteomics
+Instrument: Q Exactive HF mass spectrometer
+Instrument: LTQ-Orbitrap
+Instrument: Thermo Fisher Scientific
+MissedCleavages: maximum of two
+Modification: carbamidomethylation of cysteine
+Modification: oxidation of methionine
+Modification: acetylation
+Modification: single, di- and tri-methylation of lysine
+Modification: single and di-methylation of arginine
+Modification: phosphorylation
+Organism: Gallus gallus
+Organism: Homo sapiens
+OrganismPart: 6-well plates containing glass coverslips
+ReductionReagent: dithiothreitol
+ReductionReagent: DTT
+SearchEngine: MaxQuant
+SearchEngine: Andromeda
+Separation: SDS-PAGE
+Strain: HeLa
+Strain: HT1080
+Strain: DT40
+Temperature: 37 degreesC
+Temperature: 4 degreesC
+Temperature: ambient temperature
+Treatment: Transient transfections
+Treatment: RNAi treatments
+Treatment: rescue experiments
+Treatment: immunofluorescence microscopy
+Treatment: live cell imaging
+Treatment: Proximity ligation assay
+Treatment: quantitative real-time PCR
+Treatment: immunoelectron microscopy
+Treatment: in vitro binding array
+Treatment: preparation of Repo-Man bound nucleosomes
+Treatment: quantitative immunoblotting
+Treatment: Mass spectrometry
+Treatment: bioinformatic analyses
+Treatment: chromatin immunoprecipitation
+Treatment: ChIP

@@ -1,0 +1,51 @@
+AcquisitionMethod: LC-MS/MS
+AlkylationReagent: acrylamide
+Bait: protein A
+CellLine: ExpiCHO-S
+Chromatography: size-exclusion chromatography (SEC)
+Chromatography: affinity chromatography
+Chromatography: protein A affinity chromatography
+CleavageAgent: trypsin
+Experiment: glycoproteomics
+FlowRate: 5 microL/min
+FragmentationMethod: Collision Induced Dissociation
+Instrument: Waters nanoEase M/Z HSS T3 C18 column
+Instrument: ZenoTOF 7600 mass spectrometer
+Instrument: Waters
+Instrument: Microscale LC system
+Instrument: SCIEX
+IonizationType: CID
+MissedCleavages: two missed cleavages
+Modification: deamidation
+Modification: oxidation
+Modification: propionamide
+Organism: CHO cells
+Organism: 1F5 protein
+Organism: mAb66 protein
+Organism: HNV prefusion F antigens
+Organism: Protein Data Bank proteins
+Organism: 12B2 protein
+Organism: 5B3 protein
+Organism: ExpiCHO-S cells
+ReductionReagent: dithiothreitol
+SearchEngine: Byonic
+Separation: affinity chromatography
+Separation: protein A affinity chromatography
+Separation: size-exclusion chromatography
+Separation: SEC
+TechnologyType: LC-MS/MS
+Temperature: 4 degreesC
+Temperature: 37 degreesC
+Temperature: 30 degreesC
+Temperature: -20 degreesC
+Temperature: 95 degreesC
+Temperature: 25 degreesC
+Treatment: transfection
+Treatment: affinity chromatography
+Treatment: size-exclusion chromatography
+Treatment: negative stain transmission electron microscopy
+Treatment: Cryo-EM sample preparation
+Treatment: Cryo-EM data collection
+Treatment: Cryo-EM data processing
+Treatment: enzyme-linked immunosorbent assay
+Treatment: mass spectrometry glycoproteomic analysis

@@ -1,0 +1,67 @@
+AcquisitionMethod: LC-MS/MS
+AlkylationReagent: iodoacetamide (IAA)
+CellLine: HEK293
+Chromatography: Maccel C18AQ resin
+Chromatography: Agilent 300 Extend C18
+Chromatography: C4 resin
+Chromatography: reversed-phase chromatography (RP)
+CleavageAgent: trypsin
+CleavageAgent: Lys-C
+Experiment: proteomics
+FlowRate: 0.8 mL/min
+FlowRate: 300 nL/min
+FractionationMethod: basic pH reverse phase fractionation
+FragmentationMethod: higher-energy collisional dissociation
+GradientTime: 50 min
+GradientTime: 3 hr
+Instrument: Maccel C18AQ resin (Nest Group)
+Instrument: Agilent 1100
+Instrument: Thermo Scientific
+Instrument: LTQ Orbitrap Elite
+Instrument: Agilent 300 Extend C18 column
+Instrument: Agilent Technologies
+Instrument: Famos autosampler (LC Packings)
+Instrument: Agilent 1200
+Instrument: Omni TH homogenizer
+Instrument: Magic C4 resin (Michrom Bioresources)
+Instrument: Thermo Scientific Q Exactive
+IonizationType: ESI
+IonizationType: electrospray ionization
+MS2Analyzer: Orbitrap
+MS2Analyzer: ion trap
+MissedCleavages: 1
+Modification: oxidation
+Modification: deamidation
+Modification: phosphorylation
+Modification: pyro-glutamate
+Modification: carbamylation
+Modification: acetylation
+Modification: dihydroxy tryptophan
+Modification: methylation
+Modification: iodination
+Modification: N-terminal methionine cleavage
+NumberOfFractions: 96
+NumberOfFractions: 24
+NumberOfSamples: 24 raw mass spectrometry data files (.raw) from HEK293 cells
+Organism: Mus musculus
+Organism: HEK293
+Organism: Homo sapiens
+OrganismPart: whole brain
+OrganismPart: brain
+ReductionReagent: dithiothreitol
+ReductionReagent: DTT
+SearchEngine: Proteome Discoverer
+SearchEngine: Sequest
+Separation: basic pH reverse phase fractionation
+Separation: liquid chromatography electrospray ionization tandem mass spectrometry (LC-ESI-MS/MS)
+Strain: C57BL/6
+Strain: 129/sv
+TechnologyType: LC-MS/MS
+Temperature: 56°C
+Temperature: room temperature
+Treatment: urea lysis
+Treatment: dithiothreitol reduction
+Treatment: iodoacetamide alkylation
+Treatment: methanol/chloroform precipitation
+Treatment: Lys-C digestion
+Treatment: trypsin digestion

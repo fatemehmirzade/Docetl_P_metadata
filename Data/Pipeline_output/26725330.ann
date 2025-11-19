@@ -1,0 +1,54 @@
+AcquisitionMethod: LC-MS/MS
+AlkylationReagent: iodoacetamide (IAA)
+CellLine: HCC2218
+CellLine: MCF7
+CellLine: HCC1937
+CellLine: HMEC
+CellLine: HCC1599
+Chromatography: C18
+Chromatography: nano-electrospray ion source
+Chromatography: HPLC
+Chromatography: strong anion exchange
+Chromatography: SDS-PAGE
+CleavageAgent: trypsin
+Disease: breast cancer (BC)
+Experiment: proteomics
+FactorValue: breast cancer subtypes
+FractionationMethod: strong anion exchange chromatography
+FragmentationMethod: higher-energy collisional dissociation
+GradientTime: 200-min
+Instrument: Thermo Scientific
+Instrument: Thermo Scientific Q Exactive
+Instrument: EASY-nLC
+IonizationType: nano-electrospray ion source
+Label: super-SILAC
+Label: SILAC
+MS2Analyzer: Orbitrap
+Modification: methionine oxidation
+Modification: N-terminal acetylation
+Modification: carbamidomethyl cysteine
+Modification: carbamidomethylation
+NumberOfFractions: 6
+NumberOfSamples: 40 samples
+NumberOfSamples: 40 breast tumour samples
+Organism: Homo sapiens
+Organism: cells
+OrganismPart: breast tumour
+OrganismPart: mammary epithelial cells
+QuantificationMethod: super-SILAC
+QuantificationMethod: SILAC
+ReductionReagent: DTT
+ReductionReagent: dithiothreitol
+SearchEngine: MaxQuant
+SearchEngine: Andromeda
+Separation: strong anion exchange chromatography
+Separation: SDS-PAGE
+Separation: reversed-phase
+Strain: HCC1599
+Strain: MCF7
+Strain: HCC1937
+Strain: HCC2218
+Strain: HMEC
+TechnologyType: LC-MS/MS
+Temperature: 95 degreesC
+Temperature: 37 degreesC

@@ -1,0 +1,50 @@
+AcquisitionMethod: SPS-MS3-based
+AcquisitionMethod: MS1
+AcquisitionMethod: MS2
+AcquisitionMethod: Top10 method
+AlkylationReagent: iodoacetamide (IAA)
+CellLine: BY4742
+Chromatography: reversed-phase liquid chromatography (RP)
+Chromatography: C18
+CleavageAgent: trypsin
+CleavageAgent: Lys-C
+Experiment: phosphoproteomics
+Experiment: proteomics
+FlowRate: 0.6 mL/min
+FlowRate: 500 nL/min
+FractionationMethod: basic reverse-phase fractionation
+FragmentationMethod: Higher-energy collisional dissociation
+FragmentationMethod: Collision-induced dissociation
+GradientTime: 75 min linear gradient
+GradientTime: 90 min gradient
+Instrument: Orbitrap Fusion Lumos mass spectrometer
+Instrument: Proxeon EASY-nLC 1200 LC pump
+Instrument: Thermo Fisher Scientific
+Label: TMT11
+Label: TMT10plex
+MS2Analyzer: Orbitrap
+MS2Analyzer: quadrupole ion trap
+Modification: TMT tags
+Modification: carbamidomethylation
+Modification: oxidation
+Modification: deamidation
+Modification: phosphorylation
+NumberOfFractions: 96
+NumberOfFractions: 24
+NumberOfFractions: 12
+NumberOfSamples: 11-plex
+Organism: Saccharomyces cerevisiae
+Organism: yeast
+QuantificationMethod: SPS-MS3-based TMT
+QuantificationMethod: TMT
+ReductionReagent: DTT
+ReductionReagent: TCEP
+ReductionReagent: dithiothreitol
+ReductionReagent: Tris(2-carboxyethyl)phosphine
+SearchEngine: COMET
+Separation: basic reverse-phase fractionation
+Separation: reversed-phase
+Strain: BY4742
+Temperature: room temperature
+Temperature: 37 degreesC
+Temperature: 4 degreesC

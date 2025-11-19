@@ -1,0 +1,76 @@
+AcquisitionMethod: LC-MS/MS
+Age: 8-12 weeks
+AlkylationReagent: N-ethylmaleimide (NEM)
+AlkylationReagent: iodoacetamide
+Bait: streptavidin
+CellType: B cells
+Chromatography: SOLA C18 solid phase extraction
+Chromatography: C18
+Chromatography: SNA-I lectin chromatography
+CleavageAgent: trypsin
+Experiment: proteomics
+FlowRate: 300 nl min-1
+GradientTime: 105 min
+IonizationType: Electrospray Ionization
+Label: carboxyfluorescein diacetate succinimidyl ester
+Label: CFSE
+Modification: deamidation
+Modification: reduction
+Modification: alkylation
+Modification: N-glycolylneuraminic acid (Neu5Gc) addition
+NumberOfSamples: 3 mice
+NumberOfSamples: 26 proteins
+NumberOfSamples: 14 experiments
+NumberOfSamples: 22 experiments
+NumberOfSamples: 4 experiments
+NumberOfSamples: 3 experiments
+NumberOfSamples: 2 experiments
+Organism: Mus musculus
+Organism: Homo sapiens
+OrganismPart: subcutis
+OrganismPart: spleen
+OrganismPart: skin
+OrganismPart: maternal blood
+OrganismPart: uterine blood vessels
+OrganismPart: dermis
+OrganismPart: splenocytes
+OrganismPart: placental trophoblasts
+ReductionReagent: TCEP
+ReductionReagent: tris(2-carboxyethyl)phosphine
+ReductionReagent: sample reducing agent
+ReductionReagent: dithiothreitol (DTT)
+SearchEngine: ProteinPilot search engine
+Separation: SDS-PAGE
+Sex: female
+Sex: male
+Strain: C57BL/6J
+Strain: CD45.1+ C57BL/6J (Ptprca)
+Strain: OT-I
+Strain: OT-II
+Strain: Rag2-/-
+Strain: Batf3-/-
+Strain: muMT
+Strain: mOVA
+Strain: Foxp3DTR
+Strain: Flt3l-/-
+Strain: Cd19-cre
+Strain: CD169-DTR
+Strain: MD4
+Strain: H2-Ab1fl/fl
+Strain: ACTB-cre
+Strain: Lyn-/-
+Strain: Cd22-/-
+TechnologyType: Proteomics
+Temperature: 37 degreesC
+Temperature: 4 degreesC
+Temperature: room temperature
+Temperature: 25 degreesC
+Temperature: 70 degreesC
+Treatment: magnetic-bead-based negative selection
+Treatment: retro-orbital injection
+Treatment: intraperitoneal injection
+Treatment: immunoprecipitation
+Treatment: flow cytometry
+Treatment: intracellular staining
+Treatment: surface staining
+Treatment: i.v. adjuvants with c-OVA

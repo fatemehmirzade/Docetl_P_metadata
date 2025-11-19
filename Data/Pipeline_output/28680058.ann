@@ -1,0 +1,65 @@
+AcquisitionMethod: LC-MS/MS
+Age: 2-3 months old
+Age: 4-6 week old
+AlkylationReagent: iodoacetamide (IAA)
+Bait: protein A/G plus agarose beads
+CellLine: P. falciparum D10
+CellLine: P. falciparum 3D7
+Chromatography: strong cation exchange chromatography (SCX)
+Chromatography: reversed-phase liquid chromatography (RP)
+Chromatography: Xbridge C18
+CleavageAgent: chymotrypsin
+CleavageAgent: trypsin
+EnrichmentMethod: immobilized metal affinity chromatography (IMAC)
+Experiment: phosphoproteomics
+Experiment: proteomics
+FlowRate: 1 ml flow rate per minute
+FractionationMethod: offline fractionation
+FragmentationMethod: Higher-energy collisional dissociation
+FragmentationMethod: Collision-induced dissociation
+GradientTime: 60 min
+GradientTime: 120 min
+Instrument: Agilent 1100 binary pump
+Instrument: Proxeon Easy-nLC 1000 system
+Instrument: Agilent Technologies
+Instrument: Orbitrap Fusion Tribrid mass spectrometer
+Instrument: Waters Corporation,Xbridge C18 5 um 250 x 4.6 mm column
+Instrument: Thermo Fisher Scientific
+Label: iTRAQ
+MS2Analyzer: Orbitrap
+MissedCleavages: 1
+Modification: carbamidomethylation
+Modification: phosphorylation
+Modification: oxidation of methionine
+NumberOfFractions: 12
+NumberOfFractions: 96
+NumberOfTechnicalReplicates: technical duplicates
+Organism: Homo sapiens
+Organism: Mus musculus
+Organism: Plasmodium falciparum
+Organism: rabbit
+QuantificationMethod: iTRAQ
+ReductionReagent: DTT
+ReductionReagent: Dithiothreitol
+SearchEngine: Mascot
+SearchEngine: Sequest
+Separation: reversed-phase liquid chromatography
+Strain: D10
+Strain: 3D7
+Strain: New Zealand
+Strain: Balb/c
+TechnologyType: LC-MS/MS
+Temperature: 37 degreesC
+Temperature: room temperature
+Temperature: 4 degreesC
+Treatment: WR99210
+Treatment: Shld-1
+Treatment: PKA Inhibitor PKI
+Treatment: 8Br-cAMP
+Treatment: BAPTA-AM
+Treatment: Neuraminidase
+Treatment: trypsin
+Treatment: chymotrypsin
+Treatment: pharmacological inhibitors
+Treatment: cytochalasin D
+Treatment: DMSO

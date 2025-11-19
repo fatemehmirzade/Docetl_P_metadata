@@ -1,0 +1,58 @@
+AcquisitionMethod: LC-MS/MS
+AcquisitionMethod: data dependent acquisition
+AcquisitionMethod: DDNL
+AcquisitionMethod: direct LC-MS/MS analyses
+AcquisitionMethod: decision tree method
+AlkylationReagent: iodoacetamide (IAA)
+CellLine: P. falciparum strain 3D7
+Chromatography: reversed-phase chromatography (RP)
+Chromatography: C18
+Chromatography: C18 PepMap100
+CleavageAgent: trypsin
+EnrichmentMethod: immobilized metal affinity chromatography (IMAC)
+Experiment: proteomics
+Experiment: phosphoproteomics
+Experiment: proteome profiling
+FlowRate: 0.3 mul/min
+FragmentationMethod: CID
+FragmentationMethod: ETD
+GradientTime: 320 min
+GradientTime: 4-hour LC gradients
+Instrument: LTQ Orbitrap Velos
+Instrument: Thermo Scientific
+Instrument: Dionex Ultimate 3000
+Instrument: Ultimate 3000 nano/Capillary LC System
+Instrument: Dionex
+IonizationType: nanospray ion source
+MS2Analyzer: ion trap
+MissedCleavages: 3 missed cleavages
+Modification: phosphorylation
+Modification: Oxidation (M)
+Modification: Acetyl (Protein N-term)
+Modification: Deamidated (NQ)
+Modification: Carbamidomethyl (C)
+Modification: Phospho (ST)
+Modification: Phospho Y
+NumberOfTechnicalReplicates: Triplicate
+Organism: Homo sapiens
+Organism: Plasmodium falciparum
+OrganismPart: erythrocyte material
+ReductionReagent: DTT
+ReductionReagent: dithiothreitol
+SearchEngine: X!Tandem
+SearchEngine: Mascot
+SearchEngine: Sequest
+Separation: reversed-phase
+Separation: RP separation
+Separation: C18 Pepmap 100
+Separation: reversed-phase gradient
+Strain: P. falciparum strain 3D7
+TechnologyType: LC-MS/MS
+TechnologyType: proteome profiling experiments
+Temperature: room temperature
+Temperature: 37 degreesC
+Temperature: 97 degreesC
+Treatment: saponin lysis
+Treatment: IMAC purification
+
+

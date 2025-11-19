@@ -1,0 +1,47 @@
+AcquisitionMethod: data-dependent
+Age: 2-week-old seedlings
+Age: 4-day-old seedlings
+Age: 10-day-old seedlings
+CellType: B cells
+Chromatography: two-dimensional thin layer chromatography (TLC)
+CleavageAgent: trypsin
+Experiment: gene expression analysis
+Experiment: MeRIP-Seq
+Experiment: in vivo interaction proteomics-mass spectrometry
+Experiment: proteomics
+Instrument: Thermo Fisher Scientific
+Instrument: LTQ Orbitrap Velos Pro
+Label: label-free quantification (LFQ)
+MS2Analyzer: Orbitrap
+Organism: Arabidopsis thaliana
+OrganismPart: leaves
+OrganismPart: roots
+OrganismPart: seedlings
+QuantificationMethod: label-free quantification (LFQ)
+ReductionReagent: DTT
+ReductionReagent: dithiothreitol
+SearchEngine: MaxQuant
+Separation: two-dimensional thin layer chromatography (TLC)
+Separation: SDS-PAGE
+Strain: ecotype Colombia-0
+Temperature: 4 degreesC
+Temperature: 37 degreesC
+Temperature: 22 degreesC
+Temperature: 18 degreesC
+Temperature: 90 degreesC
+Treatment: 5% NaClO
+Treatment: 0.5x MS medium
+Treatment: 16 h light:8 h dark
+Treatment: cold room (4 degreesC, dark)
+Treatment: tissue culture room (16 h light:8 h dark, 22 degreesC)
+Treatment: phytotron (16 h light:8 h dark, 22 degreesC day: 18 degreesC night)
+Treatment: HAKAIpro:HAKAI-GFP
+Treatment: MTApro:MTA-GFP
+Treatment: FIP37pro:FIP37-GFP
+Treatment: HIZ1pro:HIZ1-GFP
+Treatment: 35Spro:HIZ1-GFP
+Treatment: 1% formaldehyde
+Treatment: 0.125 M glycine solution
+Treatment: HONDA buffer
+Treatment: IP dilution buffer
+Treatment: beads washing buffer

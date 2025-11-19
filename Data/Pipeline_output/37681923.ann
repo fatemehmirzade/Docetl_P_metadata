@@ -1,0 +1,43 @@
+AcquisitionMethod: nanoLC-MS/MS
+AcquisitionMethod: DDA
+AcquisitionMethod: data-dependent acquisition
+AcquisitionMethod: PRM-MS
+AcquisitionMethod: LC-MS
+Age: >=18 years of age
+AlkylationReagent: iodoacetamide (IAA)
+CellLine: A549
+Chromatography: RSLCnano
+Chromatography: gradient
+Chromatography: C18
+Chromatography: nanoLC
+CleavageAgent: trypsin
+Experiment: proteomics
+FlowRate: 400 nL/min
+FlowRate: 30 μL/min
+FractionationMethod: density gradient centrifugation
+FragmentationMethod: Higher-Energy Collisional Dissociation
+Instrument: UltiMate 3000 RSLCnano system
+Instrument: Orbitrap Fusion Lumos Tribrid Mass Spectrometer
+IonizationType: electrospray ionization
+Label: label-free
+MS2Analyzer: Orbitrap
+MissedCleavages: 2
+MissedCleavages: maximum of 2
+Modification: carbamidomethylation
+NumberOfFractions: 3
+Organism: Homo sapiens
+QuantificationMethod: label-free quantification (LFQ)
+ReductionReagent: dithiothreitol
+ReductionReagent: DTT
+SearchEngine: MaxQuant
+SearchEngine: Skyline
+Separation: nanoLC-MS/MS
+Separation: density gradient centrifugation
+TechnologyType: Label-Free nanoLC-MS/MS
+TechnologyType: Parallel Reaction Monitoring Mass Spectrometry (PRM-MS)
+Temperature: room temperature
+Temperature: 4°C
+Temperature: 60°C
+Temperature: 37°C
+Temperature: -20°C
+Temperature: 275°C

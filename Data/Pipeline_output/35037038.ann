@@ -1,0 +1,23 @@
+AcquisitionMethod: LC-MS
+Bait: streptavidin
+CellLine: Nthy-ORI
+Experiment: proteomics
+FactorValue: treatment vs control
+FactorValue: time points
+Instrument: LTQ Orbitrap Velos Pro
+Label: Strand-specific
+Label: label-free
+MS2Analyzer: Orbitrap
+Organism: Homo sapiens
+OrganismPart: thyroid epithelial
+QuantificationMethod: label-free quantification (LFQ)
+SearchEngine: MaxQuant
+Separation: SDS-PAGE
+Strain: Nthy-ORI
+Temperature: 4degreesC
+Temperature: room temperature
+Temperature: 37degreesC
+Treatment: hormone-starved
+Treatment: T3 treatment
+Treatment: vehicle control
+Treatment: biotin labeling

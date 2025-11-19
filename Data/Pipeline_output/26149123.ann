@@ -1,0 +1,66 @@
+AcquisitionMethod: LC-MS/MS
+AcquisitionMethod: data-dependent
+AcquisitionMethod: LC-MS
+AcquisitionMethod: HPLC
+AlkylationReagent: iodoacetamide (IAA)
+Chromatography: LC-MS/MS
+Chromatography: gel-filtration
+Chromatography: reversed-phase chromatography (RP)
+Chromatography: C18
+Chromatography: anion-exchange
+CleavageAgent: trypsin
+EnrichmentMethod: immobilized metal affinity chromatography (IMAC)
+Experiment: proteomics
+Experiment: phosphoproteomics
+FactorValue: treatment vs control
+FactorValue: time points
+FlowRate: 0.3 µL/min
+FlowRate: 50 µL/min
+FractionationMethod: anion-exchange chromatography
+FractionationMethod: gel-filtration
+FractionationMethod: reverse-phase LC-MS/MS
+FragmentationMethod: higher-energy collisional dissociation
+GradientTime: 4 h
+Instrument: Thermo Scientific
+Instrument: RSLCnano HPLC system
+Instrument: LTQ Orbitrap Velos
+IonizationType: nanospray
+IonizationType: nanospray ion source
+Label: TMT 6-plex
+MS2Analyzer: Orbitrap
+MS2Analyzer: FTMS
+Modification: phosphorylation
+Modification: carboxyamidomethyl (C)
+Modification: oxidation (M)
+NumberOfFractions: 1
+NumberOfFractions: 2-4
+NumberOfFractions: 5-7
+NumberOfFractions: 10-16
+Organism: Homo sapiens
+Organism: Plasmodium falciparum
+OrganismPart: red blood cells
+QuantificationMethod: TMT
+QuantificationMethod: tandem mass tag labelling
+ReductionReagent: DTT
+ReductionReagent: dithiothreitol
+SearchEngine: Proteome Discoverer
+SearchEngine: Mascot
+SearchEngine: X!Tandem
+Separation: SDS-PAGE
+Separation: gel-filtration
+Separation: anion-exchange chromatography
+Separation: reverse-phase LC-MS/MS
+Strain: 3D7
+Strain: PKGT618Q
+Strain: CDPK1-HA
+Strain: O+ human RBC
+TechnologyType: LC-MS/MS
+Temperature: 37 degreesC
+Temperature: 4 degreesC
+Temperature: room temperature
+Temperature: 22 degreesC
+Treatment: sorbitol treatment
+Treatment: WR99210
+Treatment: Compound 2
+Treatment: dimethyl sulphoxide
+Treatment: N-(trans-Epoxysuccinyl)-L-leucine 4-guanidinobutylamide (E-64)

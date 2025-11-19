@@ -1,0 +1,59 @@
+AcquisitionMethod: LC-MS/MS
+AcquisitionMethod: tandem mass spectrometry peptide sequencing experiments
+AcquisitionMethod: data-dependent acquisition
+AcquisitionMethod: DIA
+AlkylationReagent: iodoacetamide
+Bait: streptavidin
+Chromatography: reversed-phase chromatography (RP)
+Chromatography: UPLC
+Chromatography: C18
+Disease: lung squamous cell carcinoma (LSCC)
+Experiment: phosphoproteomics
+Experiment: proteomics
+FlowRate: 0.6 ml/min
+FlowRate: 300 nl/min
+FractionationMethod: bRPLC separation
+GradientTime: 90 min gradient
+Instrument: electrospray quadrupole-orbital ion trap
+Instrument: Dionex Ultimate3000 RSLC
+Instrument: Nanoflow ultra-high performance liquid chromatograph
+Instrument: RSLC UPLC
+Instrument: Q Exactive Plus
+IonizationType: electrospray ionization
+IonizationType: ESI
+Label: TMT10plex
+MS2Analyzer: Orbitrap
+MS2Analyzer: quadrupole
+Modification: carbamidomethylation
+Modification: oxidation
+Modification: pyroglutamine
+NumberOfFractions: 12
+NumberOfSamples: 108 patients
+Organism: Homo sapiens
+OrganismPart: stromal area
+OrganismPart: tumor tissues
+OrganismPart: lymph nodes
+OrganismPart: lung
+QuantificationMethod: TMT
+QuantificationMethod: spectral counting
+ReductionReagent: DTT
+ReductionReagent: dithiothreitol
+SearchEngine: MS-GF+
+SearchEngine: MaxQuant
+SearchEngine: Sequest
+SearchEngine: Mascot
+SearchEngine: Comet
+Separation: bRPLC separation
+Separation: UPLC
+Separation: reversed-phase
+TechnologyType: LC-MS/MS
+TechnologyType: tandem mass spectrometry
+TechnologyType: shotgun proteomics
+Temperature: 4 degreesC
+Temperature: 15 degreesC
+Temperature: 25 degreesC
+Temperature: 37 degreesC
+Temperature: 60 degreesC
+Temperature: 65 degreesC
+Temperature: room temperature
+TumorStage: TNM

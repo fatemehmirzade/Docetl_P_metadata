@@ -1,0 +1,44 @@
+AcquisitionMethod: data-dependent
+AcquisitionMethod: DDA
+AcquisitionMethod: LC-MS/MS
+AlkylationReagent: iodoacetamide (IAA)
+CellLine: HeLa
+Chromatography: C18
+CleavageAgent: trypsin
+Experiment: proteomics
+FlowRate: 250 nL/min
+FragmentationMethod: higher-energy collisional dissociation
+GradientTime: 150 min
+Instrument: Easy-nLC 1000
+Instrument: Proxeon Biosystems
+Instrument: Branson
+Instrument: Thermo Scientific
+Instrument: Thermo Scientific EASY-Spray columns
+Instrument: Thermo Scientific Q Exactive
+IonizationType: ESI
+IonizationType: electrospray ionization
+MS2Analyzer: Orbitrap
+MissedCleavages: 3
+Modification: carbamidomethylation of C
+Modification: oxidation of M
+Modification: acetylation of protein N terminus
+Organism: Homo sapiens
+OrganismPart: cervical cancer cells
+QuantificationMethod: label-free quantification (LFQ)
+ReductionReagent: DTT
+ReductionReagent: dithiothreitol
+SearchEngine: MaxQuant
+SearchEngine: Morpheus
+SearchEngine: Percolator
+SearchEngine: Andromeda
+SearchEngine: Mascot
+SearchEngine: MS-GF+
+Strain: HeLa
+TechnologyType: LC-MS/MS
+Temperature: 95 degreesC
+Temperature: 37 degreesC
+Temperature: 45 degreesC
+Treatment: Dulbecco's modified Eagle's medium supplemented with 10% fetal bovine serum and 1% antibiotics
+Treatment: ProteaseMAX Surfactant
+Treatment: DTT and iodoacetamide
+Treatment: trypsin digestion
