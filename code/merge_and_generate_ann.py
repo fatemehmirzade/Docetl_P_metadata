@@ -148,9 +148,6 @@ def save_simple_ann_files(merged_data, output_dir):
 
 def main():
     """Main execution function."""
-    print("=" * 80)
-    print("DocETL Simple Annotation Generator (FIXED)")
-    print("=" * 80)
     
     input_base_path = r'F:\test_metadata\other_test\output'
     output_base_path = r'F:\\test_metadata\other_test\outputs\simple_annotations'
@@ -182,7 +179,7 @@ def main():
     print("\nLoading pipeline outputs...")
     for category, filepath in output_files.items():
         data = load_json_file(filepath)
-        print(f"  ✓ {category}: {len(data)} papers")
+        print(f" {category}: {len(data)} papers")
     
     # Merge all outputs
     print("\n Merging outputs by filename...")
