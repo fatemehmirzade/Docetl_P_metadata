@@ -1,0 +1,290 @@
+default_model: gpt-4o
+max_threads: 4
+
+optimizer_config:
+  enable_optimizer: true
+  sample_size: 5  
+  validation_sample_size: 3  
+  optimizer_model: gpt-4o
+
+datasets:
+  papers:
+    type: file
+    path: ./papers_dataset.json
+
+operations:
+  - name: extract_ms_instruments
+    type: map
+    model: gpt-4o
+    output:
+      schema:
+        Instrument: list[string]
+        AcquisitionMethod: list[string]
+        IonizationType: list[string]
+        FragmentationMethod: list[string]
+        MS2MassAnalyzer: list[string]
+        CollisionEnergy: list[string]
+        PrecursorMassTolerance: list[string]
+        FragmentMassTolerance: list[string]
+        TechnologyType: list[string]
+    prompt: |
+      You are extracting mass spectrometry instrumentation metadata from proteomics research papers to enable standardized data cataloging, method comparison, and experimental reproducibility. Your task is to carefully read the provided text and identify all explicitly mentioned instrumentation details across 9 categories. This information is critical for researchers to understand the technical capabilities, sensitivity, and comparability of different proteomics datasets, and for reproducing experimental conditions.
+      
+      Paper: {{ input.filename }}
+      {% if input.methods %}
+      Methods section:
+      """{{ input.methods }}"""
+      {% endif %}
+      {% if input.supplementary_information %}
+      Supplementary information:
+      """{{ input.supplementary_information }}"""
+      {% endif %}
+      
+      Extract ALL mentions of the following categories. ONLY extract information that is explicitly stated in the text - do not infer, assume, or generate any information:
+      
+      - Instrument: full instrument names, manufacturer names, LC system models, AND mass spectrometer models (e.g., "Orbitrap Fusion Lumos", "Q Exactive HF", "LTQ-Orbitrap Velos", "Thermo Scientific", "Easy-nLC 1000", "Proxeon Biosystems", "Bruker", "Waters ACQUITY", "Branson sonifier", "EASY-Spray columns")
+      
+        Extract ALL of the following when present:
+        * Complete MS instrument model names (e.g., "Orbitrap Q Exactive HF-X", "LTQ-Orbitrap Velos", "Q Exactive Plus", "LTQ Velos Orbitrap", "LTQ-Orbitrap")
+        * Manufacturer names (e.g., "Thermo Scientific", "Thermo Fisher Scientific", "Bruker", "Waters", "Agilent", "Sciex")
+        * LC/HPLC system models (e.g., "Easy-nLC 1000", "Easy-nLC 1200", "ACQUITY UPLC", "Dionex UltiMate 3000", "Proxeon Biosystems")
+        * Mass spectrometer base models (e.g., "Q Exactive", "Orbitrap Fusion", "LTQ-Orbitrap", "Triple TOF", "LTQ Velos")
+        * Column systems (e.g., "EASY-Spray columns", "Thermo Scientific EASY-Spray", "C18 column")
+        * Other equipment (e.g., "Branson", "Branson sonifier", sonicators, autosamplers)
+        
+        **IMPORTANT**: 
+        - Extract manufacturer even if only mentioned once (e.g., "Thermo Scientific" from "Thermo Scientific Q Exactive")
+        - DO extract column systems when they are specific branded systems (e.g., "EASY-Spray columns", "Thermo Scientific EASY-Spray columns")
+        - DO NOT extract generic "C18" as instrument (this goes in Chromatography)
+        - DO NOT extract software names as instruments (e.g., "Xcalibur" → not an instrument)
+        - For compound instrument names like "LTQ Velos Orbitrap", extract it as one unit
+      
+      - AcquisitionMethod: data acquisition modes (e.g., "DDA", "data-dependent acquisition", "data-dependent", "SWATH", "PRM", "parallel reaction monitoring", "DIA", "data-independent acquisition", "LC-MS/MS", "LC-MS", "tandem mass spectrometry")
+      
+        **IMPORTANT**: "LC-MS/MS" is BOTH an acquisition method AND a technology type - extract it in BOTH fields
+      
+      - IonizationType: ionization source types (e.g., "ESI", "electrospray ionization", "nano-ESI", "nanospray", "nanospray ion source", "MALDI", "matrix-assisted laser desorption/ionization")
+        
+        **IMPORTANT**: Capture all ionization source variations:
+        - "ESI" ↔ "electrospray ionization"
+        - "nano-ESI" or "nanospray" or "nanospray ion source" → all are ESI variants
+        - Extract BOTH abbreviation and full name when present
+      - FragmentationMethod: peptide fragmentation techniques (e.g., "HCD", "higher-energy collisional dissociation", "CID", "collision-induced dissociation", "ETD", "electron transfer dissociation", "ECD", "electron capture dissociation")
+        
+        **IMPORTANT**: Extract ALL fragmentation methods mentioned:
+        - "HCD" ↔ "higher-energy collisional dissociation" or "Higher-Collisional Dissociation"
+        - "CID" ↔ "collision-induced dissociation"
+        - "ETD" ↔ "electron transfer dissociation"
+        - "ECD" ↔ "electron capture dissociation"
+        - Compound mentions: "CID or ETD" → extract BOTH "CID" AND "ETD" separately
+      - MS2MassAnalyzer: MS2 analyzer type - **LOOK FOR THIS EXPLICITLY** (e.g., "Orbitrap", "orbitrap analyzer", "ion trap", "linear ion trap", "LIT", "TOF", "time-of-flight", "Q-TOF", "quadrupole", "quadrupole-orbitrap")
+      
+        **CRITICAL MS2 ANALYZER EXTRACTION**: The MS2 analyzer is often embedded in the instrument name. Extract the analyzer type even if not explicitly stated:
+        - Instrument "LTQ-Orbitrap" or "LTQ Orbitrap" → MS2MassAnalyzer: "Orbitrap" AND "ion trap" (LTQ = Linear Trap Quadrupole = ion trap)
+        - Instrument "LTQ Velos Orbitrap" or "LTQ-Velos-Orbitrap" → MS2MassAnalyzer: "Orbitrap" AND "ion trap"
+        - Instrument "Q Exactive" → MS2MassAnalyzer: "Orbitrap" AND "quadrupole"
+        - Instrument "Orbitrap Q Exactive" → MS2MassAnalyzer: "Orbitrap" AND "quadrupole"
+        - Instrument "Orbitrap Fusion" → MS2MassAnalyzer: "Orbitrap" AND "ion trap"
+        - Instrument "Q-TOF" → MS2MassAnalyzer: "TOF" AND "quadrupole"
+        - Instrument "Triple TOF" → MS2MassAnalyzer: "TOF" AND "quadrupole"
+        - Instrument with "Orbitrap" anywhere in name → MS2MassAnalyzer: "Orbitrap"
+        
+        This is one of the few cases where you should INFER the analyzer type from the instrument name when not explicitly stated.
+      - CollisionEnergy: collision energy values with units (e.g., "28%", "NCE 28", "25-35%", "30 eV", "stepped collision energy")
+      - PrecursorMassTolerance: MS1 mass tolerance (e.g., "10 ppm", "20 ppm", "0.5 Da", "±10 ppm")
+      - FragmentMassTolerance: MS2 mass tolerance (e.g., "0.02 Da", "0.6 Da", "20 ppm", "0.5 Da")
+      - TechnologyType: overall MS technology approach (e.g., "LC-MS/MS", "shotgun proteomics", "targeted proteomics", "bottom-up proteomics")
+      
+        **IMPORTANT**: "LC-MS/MS" should be extracted in BOTH AcquisitionMethod AND TechnologyType
+      
+      IMPORTANT INSTRUCTIONS:
+      - Extract information EXACTLY as written in the text
+      - Capture BOTH full names AND abbreviations when present (e.g., both "HCD" and "higher-energy collisional dissociation", "DDA" and "data-dependent acquisition")
+      - **MS2 ANALYZER PRIORITY**: This field is often missing. Always check:
+        1. Is it explicitly stated? (e.g., "MS/MS spectra were acquired in the Orbitrap")
+        2. Can you infer it from the instrument name? (see examples in MS2MassAnalyzer section above)
+        3. Extract MULTIPLE analyzer types if the instrument has hybrid configuration (e.g., "Orbitrap" + "ion trap" for LTQ-Orbitrap)
+      - If you are uncertain whether information belongs to a category, do NOT include it (EXCEPT for MS2 analyzer inference from instrument name - this is allowed)
+      - If a category has no explicitly mentioned information, return an empty list for that category
+      - Do not make assumptions or inferences beyond what is directly stated (except MS2 analyzer from instrument)
+      - Do not extract manufacturer locations (e.g., "Sunnyvale, CA", "Bremen, Germany") or generic place names
+      - For instruments, include:
+        * Specific model names (e.g., "Q Exactive HF-X", not just "Thermo Scientific")
+        * Manufacturer names (e.g., "Thermo Scientific", "Bruker")
+        * LC system models (e.g., "Easy-nLC 1000")
+        * Column systems (e.g., "EASY-Spray columns", "Thermo Scientific EASY-Spray columns")
+      
+      Return your response as valid JSON using the category names above as keys, with lists of extracted strings as values. Do not include markdown formatting, code blocks, or any text outside the JSON structure. Return only the JSON object.
+    
+    gleaning:
+      num_rounds: 2
+      validation_prompt: |
+        INSTRUMENTATION VALIDATION with MS2 analyzer priority:
+        
+        1. **MS2 Mass Analyzer** (CRITICAL - often missing but should be present in 90%+ of papers):
+           - Check if MS2MassAnalyzer was extracted
+           - If EMPTY or MISSING, look at the instrument name and infer:
+             * "LTQ-Orbitrap" or "LTQ Orbitrap" or "LTQ Velos Orbitrap" or "LTQ-Velos-Orbitrap" → MS2MassAnalyzer should have: ["Orbitrap", "ion trap"]
+             * "Q Exactive" or "Orbitrap Q Exactive" → MS2MassAnalyzer should have: ["Orbitrap", "quadrupole"]
+             * "Orbitrap Fusion" → MS2MassAnalyzer should have: ["Orbitrap", "ion trap"]
+             * "Q-TOF" or "Triple TOF" → MS2MassAnalyzer should have: ["TOF", "quadrupole"]
+             * Any instrument with "Orbitrap" in name → MS2MassAnalyzer should have at least: ["Orbitrap"]
+           - Also check text for explicit mentions: "MS/MS spectra acquired in the Orbitrap", "ion trap analyzer"
+        
+        2. **Instrument completeness** (present in 100% of papers):
+           - Did you extract the MS instrument model? (e.g., "Q Exactive", "LTQ-Orbitrap Velos", "Orbitrap Fusion", "LTQ Velos Orbitrap")
+           - Did you extract manufacturer if mentioned? (e.g., "Thermo Scientific", "Thermo Fisher", "Bruker", "Waters")
+           - Did you extract LC system if mentioned? (e.g., "Easy-nLC 1000", "ACQUITY UPLC", "Dionex UltiMate")
+           - Did you extract column systems if mentioned? (e.g., "EASY-Spray columns", "Thermo Scientific EASY-Spray columns")
+           - Did you extract other equipment? (e.g., "Branson", sonicators)
+        
+        3. **Acquisition method** (present in 95%+ of papers):
+           - Did you find data acquisition mode?
+           - Look for: "DDA", "data-dependent", "SWATH", "DIA", "data-independent", "PRM"
+           - Also check for: "LC-MS/MS", "LC-MS", "tandem mass spectrometry"
+           - Extract BOTH abbreviation AND full name if present
+           - "data-dependent" and "data-dependent acquisition" are BOTH valid
+           - "LC-MS/MS" should appear in BOTH AcquisitionMethod AND TechnologyType
+        
+        4. **Fragmentation method** (present in 90%+ of papers):
+           - Did you find fragmentation technique?
+           - Look for: "HCD", "higher-energy collisional dissociation", "CID", "collision-induced dissociation", "ETD"
+           - Often in phrases: "peptides were fragmented using HCD", "HCD fragmentation", "fragmented by CID"
+           - Extract BOTH abbreviation AND full name if present
+        
+        5. **Both abbreviations AND full names** for key methods:
+           - "DDA" should have "data-dependent acquisition" OR "data-dependent" if both mentioned
+           - "HCD" should have "higher-energy collisional dissociation" if both mentioned
+           - "ESI" should have "electrospray ionization" if both mentioned
+        
+        Common extraction errors:
+        - MS2 analyzer not extracted despite being inferrable from instrument name (MOST COMMON ERROR)
+        - Instrument mentioned but not extracted (e.g., "analyzed on a Q Exactive")
+        - Manufacturer mentioned separately (e.g., "Thermo Scientific") but not extracted
+        - LC system mentioned but not extracted as instrument
+        - Column systems mentioned (e.g., "EASY-Spray columns") but not extracted
+        - Only abbreviation extracted without full name, or vice versa
+        - Acquisition method described indirectly (e.g., "peptides were selected for fragmentation" = DDA)
+        - "LC-MS/MS" not extracted in both AcquisitionMethod and TechnologyType
+        
+        Return JSON with detailed findings:
+        {
+          "passes_validation": true or false (false if MS2 analyzer clearly missing or inferrable but not extracted),
+          "missing_ms2_analyzer": true or false (CRITICAL if true),
+          "instrument_name_for_ms2_inference": "the instrument name to parse" (if MS2 analyzer missing),
+          "inferred_ms2_analyzer": [list of analyzer types that should be extracted based on instrument name],
+          "missing_manufacturer": true or false,
+          "missing_lc_system": true or false,
+          "missing_column_system": true or false,
+          "missing_acquisition_method": true or false,
+          "missing_lc_msms_in_tech_type": true or false (if LC-MS/MS in acquisition but not in technology),
+          "missing_fragmentation": true or false,
+          "missing_abbreviations": [list of abbreviations without full names],
+          "missing_full_names": [list of full names without abbreviations],
+          "critical_omissions": [specific quotes showing missed information],
+          "next_round_instructions": "Priority: Extract MS2 analyzer from instrument name [specific instrument], then focus on [other gaps]"
+        }
+    
+    validate:
+      - 'len(output["Instrument"]) > 0'
+      - 'len(output["AcquisitionMethod"]) > 0'
+
+  - name: unnest_instrument
+    type: unnest
+    unnest_key: Instrument
+    keep_empty: false
+
+  - name: resolve_instrument
+    type: resolve
+    blocking_keys:
+      - Instrument
+    blocking_threshold: 0.75
+    embedding_model: text-embedding-3-small
+    embedding_threshold: 0.88
+    comparison_prompt: |
+      Are these the same instrument?
+      Instrument 1: "{{ input1.Instrument }}"
+      Instrument 2: "{{ input2.Instrument }}"
+      Return "True" if same, "False" if different.
+    resolution_model: gpt-4o-mini
+    resolution_prompt: |
+      Standardize these instruments (prefer specific model):
+      {% for entry in inputs %}{{ entry.Instrument }}{% if not loop.last %}, {% endif %}{% endfor %}
+      
+      Examples: ["LTQ Velos Orbitrap","LTQ-Velos-Orbitrap","LTQ-Orbitrap Velos"]→"LTQ Velos Orbitrap"
+      Return ONLY the canonical name.
+    
+    output:
+      schema:
+        canonical_instrument: string
+
+  - name: unnest_fragmentation
+    type: unnest
+    unnest_key: FragmentationMethod
+    keep_empty: true
+
+  - name: resolve_fragmentation
+    type: resolve
+    blocking_keys:
+      - FragmentationMethod
+    blocking_threshold: 0.85
+    embedding_model: text-embedding-3-small
+    embedding_threshold: 0.92
+    comparison_prompt: |
+      Are these the same fragmentation?
+      Method 1: "{{ input1.FragmentationMethod }}"
+      Method 2: "{{ input2.FragmentationMethod }}"
+      Return "True" if same, "False" if different.
+    resolution_model: gpt-4o-mini
+    resolution_prompt: |
+      Standardize these fragmentation methods (prefer full form):
+      {% for entry in inputs %}{{ entry.FragmentationMethod }}{% if not loop.last %}, {% endif %}{% endfor %}
+      Return ONLY the canonical name.
+    
+    output:
+      schema:
+        canonical_fragmentation: string
+
+  - name: aggregate_ms_info
+    type: reduce
+    reduce_key:
+      - filename
+    optimize: true
+    output:
+      schema:
+        unique_instruments: list[string]
+        unique_acquisition_methods: list[string]
+        unique_fragmentation_methods: list[string]
+        unique_ionization_types: list[string]
+        unique_ms2_analyzers: list[string]
+        unique_technology_types: list[string]
+    prompt: |
+      Aggregate and deduplicate MS instrumentation for: {{ reduce_key.filename }}
+      
+      {% for doc in inputs %}
+      Instruments: {% if doc.canonical_instrument %}{{ doc.canonical_instrument }}{% elif doc.Instrument %}{{ doc.Instrument }}{% endif %}
+      Fragmentation: {% if doc.canonical_fragmentation %}{{ doc.canonical_fragmentation }}{% elif doc.FragmentationMethod %}{{ doc.FragmentationMethod }}{% endif %}
+      Acquisition: {% for a in doc.AcquisitionMethod %}{{ a }}, {% endfor %}
+      Ionization: {% for i in doc.IonizationType %}{{ i }}, {% endfor %}
+      MS2 Analyzer: {% for m in doc.MS2MassAnalyzer %}{{ m }}, {% endfor %}
+      Technology: {% for t in doc.TechnologyType %}{{ t }}, {% endfor %}
+      {% endfor %}
+      
+      Return deduplicated JSON. Remove empty strings, nulls, and generic locations (e.g., "Sunnyvale", "CA"). Keep only actual MS instrument names, methods, and technologies.
+
+pipeline:
+  steps:
+    - name: ms_pipeline
+      input: papers
+      operations:
+        - extract_ms_instruments
+        - unnest_instrument
+        - resolve_instrument
+        - unnest_fragmentation
+        - resolve_fragmentation
+        - aggregate_ms_info
+
+  output:
+    type: file
+    path: ./output/ms_instruments_complete.json
+    intermediate_dir: ./checkpoints
