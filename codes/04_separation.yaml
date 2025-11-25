@@ -1,0 +1,326 @@
+default_model: gpt-4o
+max_threads: 4
+
+optimizer_config:
+  enable_optimizer: true
+  sample_size: 5  
+  validation_sample_size: 3  
+  optimizer_model: gpt-4o
+
+datasets:
+  papers:
+    type: file
+    path: ./papers_dataset.json
+
+operations:
+  - name: extract_separation
+    type: map
+    model: gpt-4o
+    output:
+      schema:
+        Separation: list[string]
+        Chromatography: list[string]
+        FractionationMethod: list[string]
+        FractionationFraction: list[string]
+        FractionIdentifier: list[string]
+        NumberOfFractions: list[string]
+        EnrichmentMethod: list[string]
+        Bait: list[string]
+        FlowRateChromatogram: list[string]
+        GradientTime: list[string]
+        Time: list[string]
+        Temperature: list[string]
+    prompt: |
+      You are extracting separation and chromatography metadata from proteomics research papers to enable standardized data cataloging, method reproducibility, and technical comparison across studies. Your task is to carefully read the provided text and identify all explicitly mentioned separation, chromatography, and enrichment details across 12 categories. This information is critical for researchers to understand sample complexity reduction strategies, peptide fractionation approaches, chromatographic resolution capabilities, and enrichment specificity for post-translational modifications or specific protein classes.
+      
+      Paper: {{ input.filename }}
+      {% if input.methods %}
+      Methods section:
+      """{{ input.methods }}"""
+      {% endif %}
+      {% if input.supplementary_information %}
+      Supplementary information:
+      """{{ input.supplementary_information }}"""
+      {% endif %}
+      
+      Extract ALL mentions of the following categories. ONLY extract information that is explicitly stated in the text - do not infer, assume, or generate any information:
+      
+      - Separation: pre-MS separation techniques (e.g., "SDS-PAGE", "SCX chromatography", "strong cation exchange", "reversed-phase", "RP-HPLC", "IEF", "isoelectric focusing", "SEC", "size exclusion chromatography")
+      - Chromatography: chromatography system types (e.g., "SCX", "strong cation exchange", "RP", "reversed-phase", "C18", "C18 column", "UPLC", "HILIC", "hydrophilic interaction chromatography")
+      
+        **CRITICAL PAIRING INSTRUCTION FOR CHROMATOGRAPHY**:
+        - When you find "SCX", search nearby for "strong cation exchange" (±3 sentences)
+        - When you find "strong cation exchange", search nearby for "SCX" (±3 sentences)
+        - Extract BOTH forms if both are present: ["SCX", "strong cation exchange chromatography"]
+        - Same for: "RP" ↔ "reversed-phase"
+      
+      - FractionationMethod: peptide fractionation techniques (e.g., "high-pH reversed-phase fractionation", "high-pH RP", "SCX fractionation", "offline fractionation", "basic pH fractionation")
+      - FractionationFraction: specific fraction descriptions (e.g., "12 fractions", "24 fractions", "fractions collected every 2 minutes")
+      - FractionIdentifier: fraction naming/numbering (e.g., "fraction 1", "F1-F12", "fraction A through H")
+      - NumberOfFractions: total number of fractions (e.g., "12", "24", "96", "8 fractions")
+      - EnrichmentMethod: enrichment techniques for PTMs or specific proteins, including:
+        * **Phospho-enrichment** (CRITICAL for phosphoproteomics - nearly always present): "IMAC", "immobilized metal affinity chromatography", "Fe-IMAC", "Fe3+ IMAC", "Fe(III)-IMAC", "TiO2", "titanium dioxide", "titanium dioxide enrichment", "PHOS-Select", "phosphopeptide enrichment", "PolyMAC", "Ti4+-IMAC"
+        * Lectin-based: "lectin chromatography", "lectin affinity", "SNA-I lectin", "ConA", "concanavalin A", "WGA", "wheat germ agglutinin"
+        * Antibody-based: "antibody enrichment", "immunoprecipitation", "IP", "immunoaffinity", "affinity capture", "immunoaffinity purification", "anti-phosphotyrosine"
+        * Biotin-streptavidin: "streptavidin capture", "biotin-streptavidin enrichment", "streptavidin pulldown"
+        
+        **CRITICAL INSTRUCTION FOR PHOSPHOPROTEOMICS**: If this paper discusses "phosphoproteomics", "phosphorylation", or "phosphopeptides", you MUST search aggressively for phospho-enrichment methods in ALL sections including "Sample Preparation", "Phosphopeptide Enrichment", "Materials and Methods", "Supplementary Methods". Common phrases: "enriched using", "enriched with", "enrichment on", "enriched for phosphopeptides", "subjected to IMAC", "TiO2 beads", "loaded onto IMAC", "IMAC column", "Fe3+-IMAC".
+        
+        **CRITICAL PAIRING FOR ENRICHMENT**:
+        - When you find "IMAC", search for "immobilized metal affinity chromatography" (±5 sentences)
+        - When you find "immobilized metal affinity chromatography", search for "IMAC" (±5 sentences)
+        - Extract BOTH if present
+      
+      - Bait: affinity capture baits and resins (e.g., "anti-FLAG antibody", "protein A beads", "protein G", "streptavidin beads", "anti-HA", "Dynabeads", "Ni-NTA", "anti-ubiquitin antibody")
+      - FlowRateChromatogram: chromatographic flow rates (e.g., "300 nL/min", "0.3 µL/min", "250 nL/min", "400 nL min-1", "250 nL per minute")
+      - GradientTime: gradient duration for LC (e.g., "120 min", "90 min gradient", "2 hour gradient", "180 minutes", "150 min")
+      
+        **IMPORTANT**: Extract gradient time separately from general time durations - gradient time is specifically for chromatography
+      
+      - Time: time durations mentioned in methods (e.g., "30 min", "1 h", "overnight", "8 hours", "2 days", "room temperature for 1 hour", "5 min", "9 h", "88 min")
+      
+        **CRITICAL COMPOUND PHRASE SPLITTING**: When you see temperature AND time together, extract EACH separately:
+        - "95°C for 5 min" → Temperature: "95°C" AND Time: "5 min"
+        - "37°C for 9 h" → Temperature: "37°C" AND Time: "9 h"
+        - "45°C for 30 min" → Temperature: "45°C" AND Time: "30 min"
+        - "room temperature for 1 hour" → Temperature: "room temperature" AND Time: "1 hour"
+      
+      - Temperature: temperatures used in processing (e.g., "37°C", "room temperature", "4°C", "on ice", "-80°C", "95°C", "56 degrees Celsius", "45 degreesC", "20°C", "-20°C")
+      
+        **IMPORTANT TEMPERATURE VARIATIONS**:
+        - Extract ALL temperature mentions including negative temperatures: "-80°C", "-20°C"
+        - "on ice" → extract as "on ice" (will normalize to "4°C" in aggregation)
+        - Room temperature variations: "room temperature", "RT", "25°C"
+        - Extract as written, normalization happens in aggregation
+        
+        **CRITICAL COMPOUND PHRASE SPLITTING**: When temperature appears with time, extract temperature separately (see Time field instructions above)
+      
+      IMPORTANT INSTRUCTIONS:
+      - Extract information EXACTLY as written in the text
+      - **COMPOUND PHRASES**: If you see phrases combining temperature and time (e.g., "37°C for 9 h", "incubated at 4°C overnight", "room temperature for 30 min"), extract BOTH separately:
+        * Temperature → Temperature field: "37°C", "4°C", "room temperature"  
+        * Time duration → Time field: "9 h", "overnight", "30 min"
+      - **GRADIENT TIME vs GENERAL TIME**: Distinguish between:
+        * GradientTime: chromatography gradient durations (e.g., "150 min gradient", "120 min")
+        * Time: all other time durations (incubation times, digestion times, etc.)
+      - Capture BOTH full method names AND abbreviations when present (e.g., both "SCX" and "strong cation exchange chromatography", "IMAC" and "immobilized metal affinity chromatography")
+      - If you are uncertain whether information belongs to a category, do NOT include it
+      - If a category has no explicitly mentioned information, return an empty list for that category
+      - Do not make assumptions or inferences beyond what is directly stated
+      - Note that chromatography methods may appear in BOTH the Separation AND Chromatography fields (this is expected)
+      - For enrichment methods, capture all variations including traditional, lectin-based, antibody-based approaches
+      - For temperatures:
+        * Keep format as written: "37°C", "4 degrees C", "room temperature", "on ice", "95 degreesC", "45 degreesC"
+        * Do NOT normalize yet - that happens in aggregation step
+      - For flow rates, include units exactly as stated: "300 nL/min", "0.3 µL/min", "250 nL per minute"
+      
+      Return your response as valid JSON using the category names above as keys, with lists of extracted strings as values. Do not include markdown formatting, code blocks, or any text outside the JSON structure. Return only the JSON object.
+    
+    gleaning:
+      num_rounds: 2
+      validation_prompt: |
+        CONTEXT-AWARE VALIDATION for separation/chromatography extraction:
+        
+        1. **Phosphoproteomics enrichment check** (CRITICAL):
+           - Does this paper mention "phosphoproteomics", "phosphorylation", or "phosphopeptides"?
+           - If YES, enrichment method is MANDATORY - look harder for:
+             * "IMAC", "Fe-IMAC", "Fe3+ IMAC", "immobilized metal affinity", "Fe(III)-IMAC", "Fe3+-IMAC"
+             * "TiO2", "titanium dioxide", "TiO2 beads", "titanium dioxide enrichment"
+             * "phosphopeptide enrichment", "enriched for phosphopeptides"
+             * "PHOS-Select", "PolyMAC"
+           - Search phrases: "enriched using", "enriched with", "subjected to", "loaded onto IMAC", "IMAC column"
+           - Check different sections: "Phosphopeptide Enrichment", "Sample Preparation", "Peptide Fractionation", "Supplementary Methods"
+           - **ABBREVIATION PAIRING**: If you found "IMAC" but not "immobilized metal affinity chromatography", search again in ALL sections
+        
+        2. **Chromatography methods** (present in 95%+ of papers):
+           - At minimum should have: "C18", "reversed-phase", "RP", or "SCX"
+           - Look for: "separated on", "loaded onto", "eluted from", "C18 column"
+           - Common patterns: "separated by reversed-phase", "RP-HPLC", "C18 analytical column"
+           - **ABBREVIATION PAIRING**: 
+             * Found "SCX" but not "strong cation exchange"? Search again
+             * Found "RP" but not "reversed-phase"? Search again
+        
+        3. **Technical parameters** (often present):
+           - Flow rate: "X nL/min", "Y µL/min" (e.g., "300 nL/min", "250 nL per minute")
+           - Gradient time: "Z minute gradient", "W min" (e.g., "120 min", "2 h gradient", "150 min")
+           - Often in same sentence as chromatography mention
+        
+        4. **Time/temperature compound phrases** (check for proper splitting):
+           - Phrases like "37°C for 9 h" should yield BOTH:
+             * Temperature: "37°C"
+             * Time: "9 h"
+           - Phrases like "95°C for 5 min" should yield BOTH:
+             * Temperature: "95°C"
+             * Time: "5 min"
+           - Phrases like "incubated at room temperature overnight" should yield BOTH:
+             * Temperature: "room temperature"
+             * Time: "overnight"
+           - Check: were ALL compound phrases properly split into BOTH fields?
+        
+        5. **Gradient time extraction**:
+           - Look for LC/chromatography gradient durations: "150 min gradient", "120 min", "2 h gradient"
+           - This should go to GradientTime, not just Time
+        
+        6. **Both abbreviations AND full names**:
+           - "SCX" should have "strong cation exchange" if mentioned
+           - "IMAC" should have "immobilized metal affinity chromatography" if mentioned
+           - "RP" should have "reversed-phase" if mentioned
+        
+        Common extraction errors:
+        - Enrichment mentioned in "Sample Preparation" section but missed
+        - Chromatography described without standard terminology
+        - Gradient/flow rate in non-standard format (e.g., "250 nL per minute")
+        - Temperature and time in single phrase but not both extracted (MOST COMMON ERROR)
+        - Gradient time not extracted or confused with general time
+        - Abbreviations without full names (or vice versa)
+        
+        Return JSON with detailed findings:
+        {
+          "passes_validation": true or false,
+          "is_phospho_study": true or false (check for phospho keywords),
+          "phospho_study_missing_enrichment": true or false (CRITICAL if true),
+          "missing_imac_full_name": true or false (found IMAC but not full form),
+          "missing_chromatography": true or false,
+          "missing_flow_rate": true or false,
+          "missing_gradient": true or false,
+          "compound_phrases_not_split": [list phrases like "37°C for 9 h" that weren't properly decomposed into BOTH temperature AND time],
+          "missing_abbreviations": [list abbreviations without full names],
+          "critical_omissions": [specific quotes from text showing missed information],
+          "next_round_instructions": "Focus on: [specific guidance, prioritize enrichment for phospho studies and compound phrase splitting]"
+        }
+
+  - name: unnest_chromatography
+    type: unnest
+    unnest_key: Chromatography
+    keep_empty: true
+
+  - name: resolve_chromatography
+    type: resolve
+    blocking_keys:
+      - Chromatography
+    blocking_threshold: 0.85
+    embedding_model: text-embedding-3-small
+    comparison_prompt: |
+      Are these the same chromatography?
+      Method 1: "{{ input1.Chromatography }}"
+      Method 2: "{{ input2.Chromatography }}"
+      Return "True" if same, "False" if different.
+    resolution_model: gpt-4o
+    resolution_prompt: |
+      Standardize these chromatography methods (prefer full name with specific details):
+      {% for entry in inputs %}{{ entry.Chromatography }}{% if not loop.last %}, {% endif %}{% endfor %}
+      
+      Examples: ["SCX","strong cation exchange"]→"strong cation exchange chromatography (SCX)", ["RP","reversed-phase"]→"reversed-phase chromatography (RP)", ["C18"]→"C18 reversed-phase column"
+      Return ONLY the canonical name.
+    
+    output:
+      schema:
+        canonical_chromatography: string
+
+  - name: unnest_enrichment
+    type: unnest
+    unnest_key: EnrichmentMethod
+    keep_empty: true
+
+  - name: resolve_enrichment
+    type: resolve
+    blocking_keys:
+      - EnrichmentMethod
+    blocking_threshold: 0.85
+    embedding_model: text-embedding-3-small
+    comparison_prompt: |
+      Are these the same enrichment?
+      Method 1: "{{ input1.EnrichmentMethod }}"
+      Method 2: "{{ input2.EnrichmentMethod }}"
+      Return "True" if same, "False" if different.
+    resolution_model: gpt-4o
+    resolution_prompt: |
+      Standardize these enrichment methods (prefer full name with abbreviation):
+      {% for entry in inputs %}{{ entry.EnrichmentMethod }}{% if not loop.last %}, {% endif %}{% endfor %}
+      
+      Examples: ["IMAC","immobilized metal affinity chromatography"]→"immobilized metal affinity chromatography (IMAC)", ["TiO2","titanium dioxide"]→"titanium dioxide (TiO2) enrichment", ["SNA-I","lectin chromatography"]→"SNA-I lectin chromatography", ["immunoprecipitation","IP"]→"immunoprecipitation"
+      Return ONLY the canonical name.
+    
+    output:
+      schema:
+        canonical_enrichment: string
+
+  - name: aggregate_separation
+    type: reduce
+    reduce_key:
+      - filename
+    optimize: true
+    model: gpt-4o
+    output:
+      schema:
+        unique_chromatography_methods: list[string]
+        unique_enrichment_methods: list[string]
+        gradient_times: list[string]
+        flow_rates: list[string]
+        number_of_fractions: list[string]
+        separation_techniques: list[string]
+        fractionation_methods: list[string]
+        baits: list[string]
+        times: list[string]
+        temperatures: list[string]
+    prompt: |
+      Aggregate and deduplicate separation/chromatography for: {{ reduce_key.filename }}
+      
+      {% for doc in inputs %}
+      Chromatography: {% if doc.canonical_chromatography %}{{ doc.canonical_chromatography }}{% endif %}
+      Enrichment: {% if doc.canonical_enrichment %}{{ doc.canonical_enrichment }}{% endif %}
+      Gradient: {% for g in doc.GradientTime %}{{ g }}, {% endfor %}
+      Flow rate: {% for f in doc.FlowRateChromatogram %}{{ f }}, {% endfor %}
+      Fractions: {% for n in doc.NumberOfFractions %}{{ n }}, {% endfor %}
+      Separation: {% for s in doc.Separation %}{{ s }}, {% endfor %}
+      Fractionation: {% for fm in doc.FractionationMethod %}{{ fm }}, {% endfor %}
+      Baits: {% for b in doc.Bait %}{{ b }}, {% endfor %}
+      Times: {% for tm in doc.Time %}{{ tm }}, {% endfor %}
+      Temperature: {% for t in doc.Temperature %}{{ t }}, {% endfor %}
+      {% endfor %}
+      
+      IMPORTANT NORMALIZATION RULES:
+      1. Normalize temperatures to standard format with degree symbol:
+         - "37degreesC" → "37°C"
+         - "4 degreesC" → "4°C"
+         - "20degreesC" → "20°C"
+         - "room temperature" → keep as-is
+         - "-80degreesC" → "-80°C"
+         - "-20degreesC" → "-20°C"
+         - "98 degreesC" → "98°C"
+         - "95 degreesC" → "95°C"
+         - "45 degreesC" → "45°C"
+         - "on ice" → "4°C"
+      
+      2. Normalize flow rates:
+         - "250 nL per minute" → "250 nL/min"
+         - "300 nl min-1" → "300 nL/min"
+         - "4 microL/min" → "4 µL/min"
+         - "200 nL/min" → keep as-is
+      
+      3. Remove redundancies:
+         - If "C18" is in chromatography_methods, don't include "C18 column" in separation_techniques
+         - If "reversed-phase" is in chromatography_methods, only include it once in separation_techniques if it appears in different context
+      
+      4. Remove compound phrases that were already split:
+         - If "95°C for 5 min" appears in times, remove it (should be "95°C" in temperatures and "5 min" in times)
+         - If "37°C for 9 h" appears in times, remove it (should be "37°C" in temperatures and "9 h" in times)
+      
+      Return deduplicated JSON with unique, normalized values for all fields.
+
+pipeline:
+  steps:
+    - name: separation_pipeline
+      input: papers
+      operations:
+        - extract_separation
+        - unnest_chromatography
+        - resolve_chromatography
+        - unnest_enrichment
+        - resolve_enrichment
+        - aggregate_separation
+
+  output:
+    type: file
+    path: ./output/separation_complete.json
+    intermediate_dir: ./checkpoints

@@ -1,0 +1,284 @@
+default_model: gpt-4o
+max_threads: 4
+
+optimizer_config:
+  enable_optimizer: true
+  sample_size: 5  
+  validation_sample_size: 3  
+  optimizer_model: gpt-4o
+
+datasets:
+  papers:
+    type: file
+    path: ./papers_dataset.json
+
+operations:
+  - name: extract_sample_prep
+    type: map
+    model: gpt-4o
+    output:
+      schema:
+        CleavageAgent: list[string]
+        AlkylationReagent: list[string]
+        ReductionReagent: list[string]
+        Depletion: list[string]
+        Label: list[string]
+        ConcentrationOfCompound: list[string]
+        Compound: list[string]
+        Modification: list[string]
+        SpikedCompound: list[string]
+        SyntheticPeptide: list[string]
+    prompt: |
+      You are extracting sample preparation metadata from proteomics research papers to enable standardized data cataloging, method reproducibility, and protocol comparison. Your task is to carefully read the provided text and identify all explicitly mentioned sample preparation details across 10 categories. This information is critical for researchers to understand sample processing workflows, replicate experimental conditions, assess data quality factors like chemical modifications, and compare quantification strategies across different studies.
+      
+      Paper: {{ input.filename }}
+      {% if input.methods %}
+      Methods section:
+      """{{ input.methods }}"""
+      {% endif %}
+      {% if input.supplementary_information %}
+      Supplementary information:
+      """{{ input.supplementary_information }}"""
+      {% endif %}
+      
+      Extract ALL mentions of the following categories. ONLY extract information that is explicitly stated in the text - do not infer, assume, or generate any information:
+      
+      - CleavageAgent: enzymatic digestion agents (e.g., "trypsin", "digested with trypsin", "Lys-C", "LysC", "chymotrypsin", "Glu-C", "Arg-C")
+        
+        **IMPORTANT**: Capture all enzyme mentions including "Lys-C", "LysC" (with or without hyphen)
+      - AlkylationReagent: cysteine alkylation agents (e.g., "iodoacetamide", "IAA", "chloroacetamide", "CAA", "acrylamide")
+      
+        **CRITICAL PAIRING INSTRUCTION FOR ALKYLATION**:
+        - When you find "iodoacetamide" OR "IAA", search the ENTIRE document for BOTH forms
+        - If you find "iodoacetamide" anywhere, you MUST extract "IAA" even if not explicitly present (assume it's the standard abbreviation)
+        - If you find "IAA" anywhere, you MUST extract "iodoacetamide" even if not explicitly present
+        - Same rule for: "chloroacetamide" ↔ "CAA"
+        - Extract BOTH forms: ["iodoacetamide", "IAA"] or ["chloroacetamide", "CAA"]
+        - This is MANDATORY - these are standard abbreviations always paired together
+      
+      - ReductionReagent: disulfide bond reduction agents (e.g., "DTT", "dithiothreitol", "TCEP", "tris(2-carboxyethyl)phosphine", "beta-mercaptoethanol", "BME")
+      
+        **CRITICAL PAIRING INSTRUCTION FOR REDUCTION**:
+        - When you find "dithiothreitol" OR "DTT", you MUST extract BOTH forms
+        - If you find "dithiothreitol" anywhere, you MUST also extract "DTT" (standard abbreviation)
+        - If you find "DTT" anywhere, you MUST also extract "dithiothreitol" 
+        - Extract BOTH forms: ["DTT", "dithiothreitol"]
+        - Same rule for: "TCEP" ↔ "tris(2-carboxyethyl)phosphine"
+        - Same rule for: "BME" ↔ "beta-mercaptoethanol"
+        - This is MANDATORY - these are standard abbreviations always paired together
+      
+      - Depletion: high-abundance protein depletion methods (e.g., "albumin depletion", "IgG depletion", "ProteoMiner", "MARS column", "immunodepletion")
+      - Label: isotopic or chemical labeling methods (e.g., "TMT", "TMT10plex", "TMT16plex", "iTRAQ", "iTRAQ 4-plex", "SILAC", "label-free", "LFQ", "dimethyl labeling")
+      - ConcentrationOfCompound: compound concentrations with units (e.g., "10 mg", "2 mM", "50 µg", "100 µg/mL", "5% formic acid")
+      - Compound: molecular compounds used in sample prep (e.g., "protein", "peptide", "phosphopeptide", "albumin", "urea", "ammonium bicarbonate")
+      - Modification: post-translational modifications analyzed or introduced (e.g., "phosphorylation", "ubiquitination", "acetylation", "carbamidomethylation", "oxidation", "methylation")
+      - SpikedCompound: spike-in protein standards (e.g., "BSA", "bovine serum albumin", "yeast enolase", "UPS1", "UPS2", "Universal Proteomics Standard")
+      - SyntheticPeptide: synthetic peptide standards (e.g., "heavy labeled peptides", "isotope-labeled peptide standards", "AQUA peptides", "stable isotope-labeled peptides")
+      
+      IMPORTANT INSTRUCTIONS:
+      - Extract information EXACTLY as written in the text
+      - **ACTIVE ABBREVIATION SEARCH**: For reduction/alkylation reagents:
+        1. When you find ANY form (abbreviation or full name), immediately search the ENTIRE text
+        2. Look within ∓5 sentences of the found term for the other form
+        3. Extract BOTH forms even if they appear in different paragraphs
+        4. This is CRITICAL for: DTT ↔ dithiothreitol, IAA ↔ iodoacetamide, CAA ↔ chloroacetamide
+      - Common pairs to watch for:
+        * DTT ↔ dithiothreitol
+        * IAA ↔ iodoacetamide
+        * CAA ↔ chloroacetamide
+        * TCEP ↔ tris(2-carboxyethyl)phosphine
+        * TMT ↔ tandem mass tag
+        * BME ↔ beta-mercaptoethanol
+      - If you are uncertain whether information belongs to a category, do NOT include it
+      - If a category has no explicitly mentioned information, return an empty list for that category
+      - Do not make assumptions or inferences beyond what is directly stated
+      - For enzymes, capture mentions like "digested with trypsin", "trypsin digestion", "tryptic peptides" in CleavageAgent
+      - For concentrations, always include the unit (e.g., "10 mM" not just "10")
+      - Look for concentration patterns: "X mg protein", "Y mM reagent", "Z µg sample"
+      
+      Return your response as valid JSON using the category names above as keys, with lists of extracted strings as values. Do not include markdown formatting, code blocks, or any text outside the JSON structure. Return only the JSON object.
+    
+    gleaning:
+      num_rounds: 2
+      validation_prompt: |
+        CRITICAL VALIDATION CHECKLIST for sample preparation extraction:
+        
+        1. **Reduction reagents** (present in 85%+ of papers):
+           - Did you find BOTH the abbreviation AND full name? Examples:
+             * "DTT" AND "dithiothreitol"
+             * "TCEP" AND "tris(2-carboxyethyl)phosphine"
+           - Look for phrases: "reduced with", "reduction using", "reducing agent", "incubated with DTT"
+           - Common patterns: "10 mM DTT", "dithiothreitol (DTT)", "reduced using 5 mM dithiothreitol"
+           - **SEARCH ENTIRE TEXT**: If you found "DTT" but not "dithiothreitol", search again in ALL sections
+           - **SEARCH ENTIRE TEXT**: If you found "dithiothreitol" but not "DTT", search again in ALL sections
+        
+        2. **Alkylation reagents** (present in 85%+ of papers):
+           - Did you find BOTH forms? Examples:
+             * "IAA" AND "iodoacetamide"
+             * "CAA" AND "chloroacetamide"
+           - Look for: "alkylated with", "alkylation using", "followed by alkylation"
+           - Common patterns: "50 mM iodoacetamide", "IAA treatment", "alkylated with 55 mM iodoacetamide (IAA)"
+           - **SEARCH ENTIRE TEXT**: If you found "iodoacetamide" but not "IAA", search again in ALL sections
+           - **SEARCH ENTIRE TEXT**: If you found "IAA" but not "iodoacetamide", search again in ALL sections
+        
+        3. **Cleavage enzyme** (MANDATORY - must be present):
+           - Was the enzyme extracted? Check for: "trypsin", "Lys-C", "chymotrypsin", "digested with"
+           - This is the most critical field - if missing, validation FAILS
+        
+        4. **Concentrations** (common but often missed):
+           - Check if concentrations are mentioned but not extracted
+           - Patterns: "X µg protein", "Y mM reagent", "Z mg sample", "10 mg peptides"
+           - Extract with units: "10 mg", "2 mM", "50 µg/mL"
+        
+        5. **Labels for quantification**:
+           - TMT/iTRAQ studies: did you get specific plex? "TMT10plex", "iTRAQ 4-plex"
+           - Label-free: did you capture "label-free", "LFQ", "label-free quantification"
+        
+        Common extraction errors to check:
+        - Abbreviation found but full name missed (most common error)
+        - Full name found but abbreviation missed  
+        - Concentration value extracted without unit
+        - Enzyme mentioned indirectly but not captured
+        - **CRITICAL**: DTT found but dithiothreitol missed (or vice versa)
+        - **CRITICAL**: IAA found but iodoacetamide missed (or vice versa)
+        
+        Review the original text carefully and return JSON:
+        {
+          "passes_validation": true or false (false if cleavage enzyme missing or critical abbreviations missing),
+          "missing_abbreviations": [list abbreviations found in text without full names in extraction],
+          "missing_full_names": [list full names found in text without abbreviations in extraction],
+          "missing_dtt_pair": true or false (if found DTT but not dithiothreitol, or vice versa),
+          "missing_iaa_pair": true or false (if found IAA but not iodoacetamide, or vice versa),
+          "missing_concentrations": [list concentration values found in text but not extracted],
+          "cleavage_enzyme_present": true or false,
+          "critical_omissions": [specific information missed with exact quotes],
+          "next_round_instructions": "Specific guidance for next extraction round focusing on: [list critical gaps]. SEARCH ENTIRE TEXT for abbreviation/full name pairs."
+        }
+
+  - name: unnest_cleavage
+    type: unnest
+    unnest_key: CleavageAgent
+    keep_empty: true
+
+  - name: resolve_cleavage
+    type: resolve
+    blocking_keys:
+      - CleavageAgent
+    blocking_threshold: 0.85
+    embedding_model: text-embedding-3-small
+    comparison_prompt: |
+      Are these the same cleavage?
+      Agent 1: "{{ input1.CleavageAgent }}"
+      Agent 2: "{{ input2.CleavageAgent }}"
+      Return "True" if same, "False" if different.
+    resolution_model: gpt-4o-mini
+    resolution_prompt: |
+      Standardize these cleavage agents (prefer enzyme name only):
+      {% for entry in inputs %}{{ entry.CleavageAgent }}{% if not loop.last %}, {% endif %}{% endfor %}
+      
+      Examples: ["trypsin","trypsin digestion"]→"trypsin", ["Lys-C","LysC"]→"Lys-C"
+      Return ONLY the canonical name.
+    
+    output:
+      schema:
+        canonical_cleavage: string
+
+  - name: unnest_alkylation
+    type: unnest
+    unnest_key: AlkylationReagent
+    keep_empty: true
+
+  - name: resolve_alkylation
+    type: resolve
+    blocking_keys:
+      - AlkylationReagent
+    blocking_threshold: 0.85
+    embedding_model: text-embedding-3-small
+    comparison_prompt: |
+      Are these the same alkylation?
+      Reagent 1: "{{ input1.AlkylationReagent }}"
+      Reagent 2: "{{ input2.AlkylationReagent }}"
+      Return "True" if same, "False" if different.
+    resolution_model: gpt-4o-mini
+    resolution_prompt: |
+      Standardize these alkylation reagents (prefer full name with abbreviation):
+      {% for entry in inputs %}{{ entry.AlkylationReagent }}{% if not loop.last %}, {% endif %}{% endfor %}
+      
+      Examples: ["iodoacetamide","IAA"]→"iodoacetamide (IAA)", ["chloroacetamide","CAA"]→"chloroacetamide (CAA)"
+      Return ONLY the canonical name.
+    
+    output:
+      schema:
+        canonical_alkylation: string
+
+  - name: unnest_label
+    type: unnest
+    unnest_key: Label
+    keep_empty: true
+
+  - name: resolve_label
+    type: resolve
+    blocking_keys:
+      - Label
+    blocking_threshold: 0.85
+    embedding_model: text-embedding-3-small
+    comparison_prompt: |
+      Are these the same label?
+      Label 1: "{{ input1.Label }}"
+      Label 2: "{{ input2.Label }}"
+      Return "True" if same, "False" if different.
+    resolution_model: gpt-4o-mini
+    resolution_prompt: |
+      Standardize these labels (prefer specific plex notation):
+      {% for entry in inputs %}{{ entry.Label }}{% if not loop.last %}, {% endif %}{% endfor %}
+      
+      Examples: ["TMT","TMT10plex"]→"TMT10plex", ["iTRAQ","iTRAQ 4-plex"]→"iTRAQ 4-plex", ["label-free","LFQ"]→"label-free"
+      Return ONLY the canonical name.
+    
+    output:
+      schema:
+        canonical_label: string
+
+  - name: aggregate_sample_prep
+    type: reduce
+    reduce_key:
+      - filename
+    optimize: true
+    output:
+      schema:
+        unique_cleavage_agents: list[string]
+        unique_alkylation_reagents: list[string]
+        unique_reduction_reagents: list[string]
+        unique_labels: list[string]
+        unique_modifications: list[string]
+        unique_depletions: list[string]
+        unique_compounds: list[string]
+    prompt: |
+      Aggregate and deduplicate sample preparation for: {{ reduce_key.filename }}
+      
+      Cleavage: {% for doc in inputs %}{% if doc.canonical_cleavage %}{{ doc.canonical_cleavage }}, {% endif %}{% endfor %}
+      Alkylation: {% for doc in inputs %}{% if doc.canonical_alkylation %}{{ doc.canonical_alkylation }}, {% endif %}{% endfor %}
+      Labels: {% for doc in inputs %}{% if doc.canonical_label %}{{ doc.canonical_label }}, {% endif %}{% endfor %}
+      Reduction: {% for doc in inputs %}{% for r in doc.ReductionReagent %}{{ r }}, {% endfor %}{% endfor %}
+      Modifications: {% for doc in inputs %}{% for m in doc.Modification %}{{ m }}, {% endfor %}{% endfor %}
+      
+      Return deduplicated JSON with unique canonical values only.
+
+pipeline:
+  steps:
+    - name: sample_prep_pipeline
+      input: papers
+      operations:
+        - extract_sample_prep
+        - unnest_cleavage
+        - resolve_cleavage
+        - unnest_alkylation
+        - resolve_alkylation
+        - unnest_label
+        - resolve_label
+        - aggregate_sample_prep
+
+  output:
+    type: file
+    path: ./output/sample_prep_complete.json
+    intermediate_dir: ./checkpoints
